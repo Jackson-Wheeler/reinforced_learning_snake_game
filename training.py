@@ -7,11 +7,26 @@ import time
 import random
 
 def main():
-    # Need to get data from the configure file
-    play()
+    local_directory = os.path.dirname(__file__)
+    config_path = os.path.join(local_directory, 'configuration.txt')
+    run(config_path)
+
+def run(config_path):
+    # Upload the config file
+    config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                    neat.DefaultSpeciesSet, neat.DefaultStagnation,
+                    config_path)
+    # Create a population
+    pop = neat.Population(config)
+    # Print population
+    pop.add_reporter(neat.StdOutReporter(True))
+    stats = neat.StatisticsReporter()
+    pop.add_reporter(stats)
+    # Get the winning genome from the play function
+    winner = p.run(train, 50)
 
 
-def play():
+def train(genomes, config):
 
     # Difficulty settings
     # Easy      ->  10
@@ -92,7 +107,8 @@ def play():
         # pygame.display.flip()
 
     # Main logic
-    while True:
+    running = True
+    while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
