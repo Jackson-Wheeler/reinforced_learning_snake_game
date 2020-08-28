@@ -11,7 +11,7 @@ def main():
     elif game_type == "AI":
         pass
     elif game_type == "Training":
-        pass
+        training.main()
     else:
         print("INVALID GAME TYPE ENTERED")
 
