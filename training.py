@@ -162,7 +162,7 @@ def train(genomes, config):
                 1, (frame_size_x//10)) * 10, random.randrange(1, (frame_size_y//10)) * 10]
         food_spawn = True
 
-        # GFX
+        # Draw snake onto screen
         game_window.fill(black)
         for pos in snake_body:
             # Snake body
