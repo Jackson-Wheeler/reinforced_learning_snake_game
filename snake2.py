@@ -87,15 +87,27 @@ def main():
         game_window.blit(score_surface, score_rect)
         # pygame.display.flip()
 
-    def move(direction,snake_pos):
-        if direction == 'UP':
-            snake_pos[1] -= 10
-        if direction == 'DOWN':
-            snake_pos[1] += 10
-        if direction == 'LEFT':
-            snake_pos[0] -= 10
-        if direction == 'RIGHT':
-            snake_pos[0] += 10
+    def changeDirection(newdir, olddir):
+        if newdir == 'UP' and olddir != 'DOWN':
+            olddir = 'UP'
+        if newdir == 'DOWN' and olddir != 'UP':
+            olddir = 'DOWN'
+        if newdir == 'LEFT' and olddir != 'RIGHT':
+            olddir = 'LEFT'
+        if newdir == 'RIGHT' and olddir != 'LEFT':
+            olddir = 'RIGHT'
+        return olddir
+
+    def move(dir,pos):
+        if dir == 'UP':
+            pos[1] -= 10
+        if dir == 'DOWN':
+            pos[1] += 10
+        if dir == 'LEFT':
+            pos[0] -= 10
+        if dir == 'RIGHT':
+            pos[0] += 10
+        return pos
 
     # Main logic
     while True:
@@ -119,6 +131,9 @@ def main():
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
 
         # Making sure the snake cannot move in the opposite direction instantaneously
+        direction = changeDirection(change_to, direction)
+        '''
+        #replacing these lines with a method
         if change_to == 'UP' and direction != 'DOWN':
             direction = 'UP'
         if change_to == 'DOWN' and direction != 'UP':
@@ -127,11 +142,11 @@ def main():
             direction = 'LEFT'
         if change_to == 'RIGHT' and direction != 'LEFT':
             direction = 'RIGHT'
-
-        # Moving the snake
-        move(direction, snake_pos)
         '''
-        switching out these lines with a method to do control movement
+        # Moving the snake
+        snake_pos = move(direction, snake_pos)
+        '''
+        #switching out these lines with a method to do control movement
         if direction == 'UP':
             snake_pos[1] -= 10
         if direction == 'DOWN':
@@ -149,6 +164,7 @@ def main():
             food_spawn = False
         else:
             snake_body.pop()
+
 
         # Spawning food on the screen
         if not food_spawn:
