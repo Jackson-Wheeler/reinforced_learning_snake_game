@@ -3,7 +3,6 @@ import human_play
 # Other modules
 import sys
 
-
 def main():
     game_type = str(sys.argv[1])
     if game_type == "Human":
