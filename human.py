@@ -2,7 +2,6 @@
 Snake Eater
 Made with PyGame
 """
-
 import pygame, sys, time, random
 
 def main():
@@ -24,7 +23,7 @@ def main():
     # pygame.init() example output -> (6, 0)
     # second number in tuple gives number of errors
     if check_errors[1] > 0:
-        print('[!] Had ',check_errors[1],' errors when initialising game, exiting...')
+        print(f'[!] Had {check_errors[1]} errors when initialising game, exiting...')
         sys.exit(-1)
     else:
         print('[+] Game successfully initialised')
@@ -48,8 +47,8 @@ def main():
 
 
     # Game variables
-    snake_pos = [100, 50]
-    snake_body = [[100, 50], [100-10, 50], [100-(2*10), 50]]
+    snake_pos = [100, 50] # snake class
+    snake_body = [[100, 50], [100-10, 50], [100-(2*10), 50]] # snake class
 
     food_pos = [random.randrange(1, (frame_size_x//10)) * 10, random.randrange(1, (frame_size_y//10)) * 10]
     food_spawn = True
@@ -87,27 +86,6 @@ def main():
         game_window.blit(score_surface, score_rect)
         # pygame.display.flip()
 
-    def changeDirection(newdir, olddir):
-        if newdir == 'UP' and olddir != 'DOWN':
-            olddir = 'UP'
-        if newdir == 'DOWN' and olddir != 'UP':
-            olddir = 'DOWN'
-        if newdir == 'LEFT' and olddir != 'RIGHT':
-            olddir = 'LEFT'
-        if newdir == 'RIGHT' and olddir != 'LEFT':
-            olddir = 'RIGHT'
-        return olddir
-
-    def move(dir,pos):
-        if dir == 'UP':
-            pos[1] -= 10
-        if dir == 'DOWN':
-            pos[1] += 10
-        if dir == 'LEFT':
-            pos[0] -= 10
-        if dir == 'RIGHT':
-            pos[0] += 10
-        return pos
 
     # Main logic
     while True:
@@ -131,9 +109,6 @@ def main():
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
 
         # Making sure the snake cannot move in the opposite direction instantaneously
-        direction = changeDirection(change_to, direction)
-        '''
-        #replacing these lines with a method
         if change_to == 'UP' and direction != 'DOWN':
             direction = 'UP'
         if change_to == 'DOWN' and direction != 'UP':
@@ -142,11 +117,8 @@ def main():
             direction = 'LEFT'
         if change_to == 'RIGHT' and direction != 'LEFT':
             direction = 'RIGHT'
-        '''
+
         # Moving the snake
-        snake_pos = move(direction, snake_pos)
-        '''
-        #switching out these lines with a method to do control movement
         if direction == 'UP':
             snake_pos[1] -= 10
         if direction == 'DOWN':
@@ -155,7 +127,6 @@ def main():
             snake_pos[0] -= 10
         if direction == 'RIGHT':
             snake_pos[0] += 10
-        '''
 
         # Snake body growing mechanism
         snake_body.insert(0, list(snake_pos))
@@ -164,7 +135,6 @@ def main():
             food_spawn = False
         else:
             snake_body.pop()
-
 
         # Spawning food on the screen
         if not food_spawn:
@@ -198,6 +168,3 @@ def main():
         pygame.display.update()
         # Refresh rate
         fps_controller.tick(difficulty)
-
-
-main()
