@@ -2,7 +2,7 @@
 Snake Eater
 Made with PyGame
 """
-
+from snake import *
 import pygame, sys, time, random
 
 def main():
@@ -48,8 +48,8 @@ def main():
 
 
     # Game variables
-    snake_pos = [100, 50]
-    snake_body = [[100, 50], [100-10, 50], [100-(2*10), 50]]
+    snake_pos = [100, 50] # snake class
+    snake_body = [[100, 50], [100-10, 50], [100-(2*10), 50]] # snake class
 
     food_pos = [random.randrange(1, (frame_size_x//10)) * 10, random.randrange(1, (frame_size_y//10)) * 10]
     food_spawn = True
