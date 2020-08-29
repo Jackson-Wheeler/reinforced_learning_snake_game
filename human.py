@@ -2,7 +2,6 @@
 Snake Eater
 Made with PyGame
 """
-from snake import *
 import pygame, sys, time, random
 
 def main():
