@@ -16,6 +16,7 @@ BLACK = pygame.Color(0, 0, 0)
 WHITE = pygame.Color(255, 255, 255)
 RED = pygame.Color(255, 0, 0)
 
+SCORE = 0
 
 # Other Functions
 def check_for_errors():
@@ -79,7 +80,7 @@ def get_key_pressed(event):
 def train():
     # Window size
     FRAME_DIM = (720, 480)
-    
+
     # Check for errors
     check_for_errors()
 
@@ -90,26 +91,33 @@ def train():
     # FPS (frames per second) controller
     fps_controller = pygame.time.Clock()
 
+    #number of snakes and food
+    num_snakes_food = 1
+
     # Create Snake objects
-    snakes = list()
-    num_snakes = 1
-    for _ in range(num_snakes):
-        snake = Snake(100, 50, FRAME_DIM)
+    snakes = []
+
+    for a in range(num_snakes_food):
+        snakex = random.randrange(0,100,10)
+        snakey = random.randrange(0,100,10)
+        snake = Snake(snakex, snakey, FRAME_DIM)
         snakes.append(snake)
+
+
 
     # Main logic
     running = True
-    while running:    
+    while running:
         for event in pygame.event.get():
             # Quit Functionality
             if event.type == pygame.QUIT:
                 pygame.quit()
-                sys.exit() 
+                sys.exit()
             for snake in snakes:
                 # Get pressed key / Neural network output
                 key_pressed = get_key_pressed(event)
                 # output = ....
-                
+
                 # Resond to pressed key
                 if key_pressed == 0:
                     snake.change_to = 'UP'
@@ -119,15 +127,15 @@ def train():
                     snake.change_to = 'LEFT'
                 elif key_pressed == 3:
                     snake.change_to = 'RIGHT'
-            
+
         # Move snake
         for snake in snakes:
             # Move snake (and spawn food)
-            snake.move() 
-            
+            snake.move()
+
         # Draw
         GAME_WINDOW.fill(BLACK)
-        for snake in snakes:       
+        for snake in snakes:
             snake.draw_snake_and_food(GAME_WINDOW)
 
         # Snake Losing Conditions
@@ -144,15 +152,15 @@ def train():
                         snakes.pop(x)
             except IndexError:
                 pass
-                  
+
             # show_score(1, WHITE, 'consolas', 20)
-            
-            
+
+
         # Check if no more snakes left
         if len(snakes) == 0:
             running = False
             print("Snake Died")
-        
+
         # Refresh game screen
         pygame.display.update()
         # Refresh rate
@@ -173,8 +181,9 @@ def run(config_path):
     # Get the winning genome from the play function
     winner = pop.run(train, 50)
 
+train()
 
-if __name__ == "__main__":
-    local_directory = os.path.dirname(__file__)
-    config_path = os.path.join(local_directory, 'configuration.txt')
-    run(config_path)
+# if __name__ == "__main__":
+#     local_directory = os.path.dirname(__file__)
+#     config_path = os.path.join(local_directory, 'configuration.txt')
+#     run(config_path)
