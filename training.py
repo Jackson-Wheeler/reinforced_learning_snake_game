@@ -77,7 +77,7 @@ def get_key_pressed(event):
 #     # pygame.display.flip()
 
 # Main
-def train():
+def train(genomes,config):
     # Window size
     FRAME_DIM = (720, 480)
 
@@ -91,17 +91,21 @@ def train():
     # FPS (frames per second) controller
     fps_controller = pygame.time.Clock()
 
-    #number of snakes and food
-    num_snakes_food = 1
+    #number of snakes and food temporary until we replace with number of genomes
+    #num_snakes_food = 1
 
-    # Create Snake objects
+    # Create object lists
     snakes = []
+    ge = []
+    nets = []
 
-    for a in range(num_snakes_food):
-        snakex = random.randrange(0,100,10)
-        snakey = random.randrange(0,100,10)
-        snake = Snake(snakex, snakey, FRAME_DIM)
-        snakes.append(snake)
+
+    for id, g in genomes:
+        net = neat.nn.FeedForwardNetwork.create(g,config)
+        nets.append(net)
+        g.fitness = 0
+        ge.append(g)
+        snakes.append(Snake(random.randrange(0,100,10), random.randrange(0,100,10), FRAME_DIM))
 
 
 
@@ -128,10 +132,29 @@ def train():
                 elif key_pressed == 3:
                     snake.change_to = 'RIGHT'
 
+        # getting output from neural networks
+        for x, snake in enumerate(snakes):
+            snake_x = snake.snake_pos[0]
+            snake_y = snake.snake_pos[1]
+            food_x = snake.food.food_pos[0]
+            food_y = snake.food.food_pos[1]
+            outputs = nets[x].activate((snake_x,snake_y,food_x,food_y))
+            output = outputs.index(max(outputs))
+            print(output)
+            #mapping output to direction
+            # (-1,-.5) Down, [-.5,0) Left, [0,.5) Up, [.5,1)
+            if output == 0:
+                pass
+            if output == 1:
+                snake.change_to = 'LEFT'
+            if output == 2:
+                snake.change_to = 'RIGHT'
+            snake.move(ge[x])
         # Move snake
-        for snake in snakes:
+       # for x,snake in enumerate(snakes):
             # Move snake (and spawn food)
-            snake.move()
+
+
 
         # Draw
         GAME_WINDOW.fill(BLACK)
@@ -143,12 +166,15 @@ def train():
             try:
                 # Getting out of bounds
                 if snake.snake_pos[0] < 0 or snake.snake_pos[0] > FRAME_DIM[0]-10:
+                    ge[x].fitness -= 10 #removing fitness for crossing x boundaries
                     snakes.pop(x)
                 elif snake.snake_pos[1] < 0 or snake.snake_pos[1] > FRAME_DIM[1]-10:
+                    ge[x].fitness -= 10 #removing fitness for crossing y boundaries
                     snakes.pop(x)
                 # Touching the snake body
                 for block in snake.snake_body[1:]:
                     if snake.snake_pos[0] == block[0] and snake.snake_pos[1] == block[1]:
+                        ge[x].fitness -= 10 #removing fitness for hitting a part of the body
                         snakes.pop(x)
             except IndexError:
                 pass
@@ -181,9 +207,8 @@ def run(config_path):
     # Get the winning genome from the play function
     winner = pop.run(train, 50)
 
-train()
 
-# if __name__ == "__main__":
-#     local_directory = os.path.dirname(__file__)
-#     config_path = os.path.join(local_directory, 'configuration.txt')
-#     run(config_path)
+if __name__ == "__main__":
+    local_directory = os.path.dirname(__file__)
+    config_path = os.path.join(local_directory, 'configuration.txt')
+    run(config_path)

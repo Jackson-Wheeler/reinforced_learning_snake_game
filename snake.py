@@ -21,10 +21,11 @@ class Snake:
         # Add food object
         self.food = Food(FRAME_DIM)
         
-    def move(self):
+    def move(self, genome):
+        genome.fitness +=1
         self.changeDirection()
         self.change_pos()
-        self.grow_snake_body()
+        self.grow_snake_body(genome)
         # Spawn Food
         self.food.spawn_food()
                 
@@ -50,10 +51,11 @@ class Snake:
         if self.direction == 'RIGHT':
             self.snake_pos[0] += 10
 
-    def grow_snake_body(self):
+    def grow_snake_body(self, genome):
         self.snake_body.insert(0, list(self.snake_pos))
         if self.snake_pos[0] == self.food.food_pos[0] and self.snake_pos[1] == self.food.food_pos[1]:
             self.score += 1
+            genome.fitness +=20
             self.food.food_spawn = False
         else:
             self.snake_body.pop()
