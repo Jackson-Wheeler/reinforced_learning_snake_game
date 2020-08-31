@@ -2,6 +2,7 @@ from snake import *
 import pygame, sys, time, random
 import neat
 import os
+import numpy as np
 
 # DIFFICULTY settings
 # Easy      ->  10
@@ -140,18 +141,37 @@ def train(genomes,config):
             food_y = snake.food.food_pos[1]
             snakedistx,snakedisty = snake.distance()
             outputs = nets[x].activate((snake_x, snake_y, food_x, food_y,snakedistx,snakedisty))
-            output = outputs.index(max(outputs))
-            print('outputs: ',outputs,' output chosen: ',{output})
+            #output = outputs.index(max(outputs))
+
+            randomNumber = random.uniform(0.0,1.0)
+            sums = []
+            sums.append(outputs[0])
+            for k in range(1,len(outputs)):
+                sums.append(outputs[k]+sums[k-1])
+
+            print('list "sums" is: ',outputs)
+
+            if randomNumber in np.linspace(0,sums[0]): #70% chance of being true
+                snake.change_to = 'UP'
+            elif randomNumber in np.linspace(sums[0],sums[1]):# 20% chance of being true
+                snake.change_to = 'RIGHT'
+            elif randomNumber in np.linspace(sums[1],sums[2]): #10% chance of being true
+                snake.change_to = 'DOWN'
+            elif randomNumber in np.linspace(sums[2],sums[3]):
+                snake.change_to = 'LEFT'
+
+
+            #print('outputs: ',outputs,' output chosen: ',{output})
             #mapping output to direction
             # 0 = UP, 1 = RIGHT, 2 = DOWN, 3 = LEFT
-            if output == 0:
-                snake.change_to = "UP"
-            elif output == 1:
-                snake.change_to = "RIGHT"
-            elif output == 2:
-                snake.change_to = "DOWN"
-            elif output == 3:
-                snake.change_to = "LEFT"
+            # if output == 0:
+            #     snake.change_to = "UP"
+            # elif output == 1:
+            #     snake.change_to = "RIGHT"
+            # elif output == 2:
+            #     snake.change_to = "DOWN"
+            # elif output == 3:
+            #     snake.change_to = "LEFT"
 
             # if output == 0:
             #     pass
@@ -221,7 +241,7 @@ def run(config_path):
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
     # Get the winning genome from the play function
-    winner = pop.run(train, 50)
+    winner = pop.run(train, 70)
 
 
 if __name__ == "__main__":
