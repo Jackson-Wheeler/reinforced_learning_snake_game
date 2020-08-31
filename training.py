@@ -105,7 +105,7 @@ def train(genomes,config):
         nets.append(net)
         g.fitness = 0
         ge.append(g)
-        snakes.append(Snake(random.randrange(0,100,10), random.randrange(0,100,10), FRAME_DIM))
+        snakes.append(Snake(random.randrange(0,FRAME_DIM[0],10), random.randrange(0,FRAME_DIM[1],10), FRAME_DIM))
 
 
 
@@ -138,17 +138,27 @@ def train(genomes,config):
             snake_y = snake.snake_pos[1]
             food_x = snake.food.food_pos[0]
             food_y = snake.food.food_pos[1]
-            outputs = nets[x].activate((snake_x,snake_y,food_x,food_y))
+            snakedistx,snakedisty = snake.distance()
+            outputs = nets[x].activate((snake_x, snake_y, food_x, food_y,snakedistx,snakedisty))
             output = outputs.index(max(outputs))
-            print(output)
+            print('outputs: ',outputs,' output chosen: ',{output})
             #mapping output to direction
-            # (-1,-.5) Down, [-.5,0) Left, [0,.5) Up, [.5,1)
+            # 0 = UP, 1 = RIGHT, 2 = DOWN, 3 = LEFT
             if output == 0:
-                pass
-            if output == 1:
-                snake.change_to = 'LEFT'
-            if output == 2:
-                snake.change_to = 'RIGHT'
+                snake.change_to = "UP"
+            elif output == 1:
+                snake.change_to = "RIGHT"
+            elif output == 2:
+                snake.change_to = "DOWN"
+            elif output == 3:
+                snake.change_to = "LEFT"
+
+            # if output == 0:
+            #     pass
+            # if output == 1:
+            #     snake.change_to = 'LEFT'
+            # if output == 2:
+            #     snake.change_to = 'RIGHT'
             snake.move(ge[x])
         # Move snake
        # for x,snake in enumerate(snakes):
@@ -168,14 +178,20 @@ def train(genomes,config):
                 if snake.snake_pos[0] < 0 or snake.snake_pos[0] > FRAME_DIM[0]-10:
                     ge[x].fitness -= 10 #removing fitness for crossing x boundaries
                     snakes.pop(x)
+                    ge.pop(x)
+                    nets.pop(x)
                 elif snake.snake_pos[1] < 0 or snake.snake_pos[1] > FRAME_DIM[1]-10:
                     ge[x].fitness -= 10 #removing fitness for crossing y boundaries
                     snakes.pop(x)
+                    ge.pop(x)
+                    nets.pop(x)
                 # Touching the snake body
                 for block in snake.snake_body[1:]:
                     if snake.snake_pos[0] == block[0] and snake.snake_pos[1] == block[1]:
                         ge[x].fitness -= 10 #removing fitness for hitting a part of the body
                         snakes.pop(x)
+                        ge.pop(x)
+                        nets.pop(x)
             except IndexError:
                 pass
 
