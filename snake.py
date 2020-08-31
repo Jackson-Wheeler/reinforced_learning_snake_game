@@ -30,7 +30,7 @@ class Snake:
         self.grow_snake_body(genome)
         # Spawn Food
         self.food.spawn_food()
-        self.olddistx, self.olddisty = self.distance()
+        self.oldTotalDist = self.distance()
         self.checkDist(genome)
                 
     # Moving
@@ -60,22 +60,16 @@ class Snake:
         yvals = (self.snake_pos[1],self.food.food_pos[1])
         distx = abs(xvals[0]-xvals[1])
         disty = abs(yvals[0]-yvals[1])
-        return distx, disty
+        totalDist = math.sqrt((disty) ** 2 + (disty) ** 2)
+        return totalDist
 
     def checkDist(self,genome):
-        newDistx,newDisty = self.distance()
-        if self.direction == "UP" or self.direction == "DOWN":
-            if newDisty >= 1:
-                if newDisty <= self.olddisty:
-                    genome.fitness += 1 / (newDisty)
-                elif newDisty > self.olddisty:
-                    genome.fitness -= 1/(newDisty)
-        elif self.direction == "RIGHT" or self.direction == "LEFT":
-            if newDistx >= 1:
-                if newDistx <= self.olddistx:
-                    genome.fitness += 1 / (newDistx)
-                elif newDistx > self.olddistx:
-                    genome.fitness -= 1/(newDistx)
+        newTotalDist = self.distance()
+
+        if newTotalDist < self.oldTotalDist:
+            genome.fitness += 1
+        elif newTotalDist >= self.oldTotalDist:
+            genome.fitness -= 1.5
 
 
 

@@ -139,50 +139,49 @@ def train(genomes,config):
             snake_y = snake.snake_pos[1]
             food_x = snake.food.food_pos[0]
             food_y = snake.food.food_pos[1]
-            snakedistx,snakedisty = snake.distance()
-            outputs = nets[x].activate((snake_x, snake_y, food_x, food_y,snakedistx,snakedisty))
-            #output = outputs.index(max(outputs))
+            totalDist = snake.distance()
+            outputs = nets[x].activate((snake_x, snake_y, food_x, food_y,totalDist)) #add out of bounds input
+            output = outputs.index(max(outputs))
 
-            randomNumber = random.uniform(0.0,1.0)
-            sums = []
-            sums.append(outputs[0])
-            for k in range(1,len(outputs)):
-                sums.append(outputs[k]+sums[k-1])
-
-            print('list "sums" is: ',outputs)
-
-            if randomNumber in np.linspace(0,sums[0]): #70% chance of being true
-                snake.change_to = 'UP'
-            elif randomNumber in np.linspace(sums[0],sums[1]):# 20% chance of being true
-                snake.change_to = 'RIGHT'
-            elif randomNumber in np.linspace(sums[1],sums[2]): #10% chance of being true
-                snake.change_to = 'DOWN'
-            elif randomNumber in np.linspace(sums[2],sums[3]):
-                snake.change_to = 'LEFT'
-
+            # print('output: ',output)
 
             #print('outputs: ',outputs,' output chosen: ',{output})
-            #mapping output to direction
-            # 0 = UP, 1 = RIGHT, 2 = DOWN, 3 = LEFT
-            # if output == 0:
-            #     snake.change_to = "UP"
-            # elif output == 1:
-            #     snake.change_to = "RIGHT"
-            # elif output == 2:
-            #     snake.change_to = "DOWN"
-            # elif output == 3:
-            #     snake.change_to = "LEFT"
+            #mapping output to direction 0 = UP, 1 = RIGHT, 2 = DOWN, 3 = LEFT
+            if output == 0:
+                snake.change_to = "UP"
+            elif output == 1:
+                snake.change_to = "RIGHT"
+            elif output == 2:
+                snake.change_to = "DOWN"
+            elif output == 3:
+                snake.change_to = "LEFT"
 
-            # if output == 0:
-            #     pass
-            # if output == 1:
-            #     snake.change_to = 'LEFT'
-            # if output == 2:
+            if output == 0:
+                pass
+            if output == 1:
+                snake.change_to = 'LEFT'
+            if output == 2:
+                snake.change_to = 'RIGHT'
+
+            # sums = []
+            # sums.append(outputs[0])
+            # for k in range(1, len(outputs)):
+            #     sums.append(outputs[k] + sums[k - 1])
+            #
+            # print('list "sums" is: ', outputs)
+            #
+            # if randomNumber in np.linspace(0, sums[0]):  # 70% chance of being true
+            #     snake.change_to = 'UP'
+            # elif randomNumber in np.linspace(sums[0], sums[1]):  # 20% chance of being true
             #     snake.change_to = 'RIGHT'
+            # elif randomNumber in np.linspace(sums[1], sums[2]):  # 10% chance of being true
+            #     snake.change_to = 'DOWN'
+            # elif randomNumber in np.linspace(sums[2], sums[3]):
+            #     snake.change_to = 'LEFT'
+
+
+            #move the snake
             snake.move(ge[x])
-        # Move snake
-       # for x,snake in enumerate(snakes):
-            # Move snake (and spawn food)
 
 
 
