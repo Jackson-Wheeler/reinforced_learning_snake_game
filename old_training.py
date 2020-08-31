@@ -23,6 +23,6 @@ def run(config_path):
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
     # Get the winning genome from the play function
-    winner = p.run(train, 50)
+    winner = pop.run(train, 50)
 
 

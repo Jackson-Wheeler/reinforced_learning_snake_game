@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 
 # Colors (R, G, B)
 BLACK = pygame.Color(0, 0, 0)
@@ -20,13 +21,17 @@ class Snake:
         self.score = 0
         # Add food object
         self.food = Food(FRAME_DIM)
-        
-    def move(self):
+
+
+    def move(self, genome):
+        #genome.fitness +=1
         self.changeDirection()
         self.change_pos()
-        self.grow_snake_body()
+        self.grow_snake_body(genome)
         # Spawn Food
         self.food.spawn_food()
+        self.olddistx, self.olddisty = self.distance()
+        self.checkDist(genome)
                 
     # Moving
     def changeDirection(self):
@@ -50,10 +55,35 @@ class Snake:
         if self.direction == 'RIGHT':
             self.snake_pos[0] += 10
 
-    def grow_snake_body(self):
+    def distance(self):
+        xvals = (self.snake_pos[0],self.food.food_pos[0])
+        yvals = (self.snake_pos[1],self.food.food_pos[1])
+        distx = abs(xvals[0]-xvals[1])
+        disty = abs(yvals[0]-yvals[1])
+        return distx, disty
+
+    def checkDist(self,genome):
+        newDistx,newDisty = self.distance()
+        if self.direction == "UP" or self.direction == "DOWN":
+            if newDisty >= 1:
+                if newDisty <= self.olddisty:
+                    genome.fitness += 1 / (newDisty)
+                elif newDisty > self.olddisty:
+                    genome.fitness -= 1/(newDisty)
+        elif self.direction == "RIGHT" or self.direction == "LEFT":
+            if newDistx >= 1:
+                if newDistx <= self.olddistx:
+                    genome.fitness += 1 / (newDistx)
+                elif newDistx > self.olddistx:
+                    genome.fitness -= 1/(newDistx)
+
+
+
+    def grow_snake_body(self, genome):
         self.snake_body.insert(0, list(self.snake_pos))
         if self.snake_pos[0] == self.food.food_pos[0] and self.snake_pos[1] == self.food.food_pos[1]:
             self.score += 1
+            genome.fitness +=50
             self.food.food_spawn = False
         else:
             self.snake_body.pop()

@@ -1,16 +1,16 @@
 # Our modules
-import human_play
+import human
 # Other modules
 import sys
 
 def main():
     game_type = str(sys.argv[1])
     if game_type == "Human":
-        human_play.main()
+        human.main()
     elif game_type == "AI":
         pass
     elif game_type == "Training":
-        training.main()
+        human.main()
     else:
         print("INVALID GAME TYPE ENTERED")
 
