@@ -2,6 +2,7 @@ from snake import *
 import pygame, sys, time, random
 import neat
 import os
+import pickle
 
 # DIFFICULTY settings
 # Easy      ->  10
@@ -21,8 +22,8 @@ SCORE = 0
 # Window size
 FRAME_DIM = (780, 420)
 # Initialise game window
-pygame.display.set_caption('Snake Eater')
-GAME_WINDOW = pygame.display.set_mode((FRAME_DIM[0], FRAME_DIM[1]))
+# pygame.display.set_caption('Snake Eater')
+# GAME_WINDOW = pygame.display.set_mode((FRAME_DIM[0], FRAME_DIM[1]))
 
 
 # Other Functions
@@ -178,12 +179,13 @@ def train(genomes,config):
                 snake.move('left', ge[x])
             elif output == 2:
                 snake.move('right', ge[x])
+            
 
 
         # Draw
-        GAME_WINDOW.fill(BLACK)
-        for snake in snakes:
-            snake.draw_snake_and_food(GAME_WINDOW)
+        # GAME_WINDOW.fill(BLACK)
+        # for snake in snakes:
+        #     snake.draw_snake_and_food(GAME_WINDOW)
 
         # Snake Losing Conditions
         for x, snake in enumerate(snakes):
@@ -203,14 +205,11 @@ def train(genomes,config):
                 for block in snake.snake_body[1:]:
                     if snake.snake_pos[0] == block[0] and snake.snake_pos[1] == block[1]:
                         ge[x].fitness -= 200 #removing fitness for hitting a part of the body
-                        # print("Snake Hit Itself. Dir:", snake.direction, 
-                        #       "; End Pos:", snake.snake_pos, "; Body", snake.snake_body)
-                        # print(inputs)
                         snakes.pop(x)
                         ge.pop(x)
                         nets.pop(x)
                 # Too long with same size
-                if snake.time_in_current_size > 150:
+                if snake.time_in_current_size > 250:
                     ge[x].fitness -= 200 # remove fitness
                     snakes.pop(x)
                     ge.pop(x)
@@ -218,16 +217,25 @@ def train(genomes,config):
                     
             except IndexError:
                 pass
-
+        
+        print(len(snakes))
+        # if len(snakes) < 50:
+        #     max_g = -10000000
+        #     for g in ge:
+        #         if g.fitness > max_g:
+        #             max_g = g.fitness
+        #     print(max_g)
+                
         # Check if no more snakes left
         if len(snakes) == 0:
             running = False
             print("Snakes Died")
+            
+        # # Refresh game screen
+        # pygame.display.update()
+        # # Refresh rate
+        # fps_controller.tick(DIFFICULTY)
 
-        # Refresh game screen
-        pygame.display.update()
-        # Refresh rate
-        fps_controller.tick(DIFFICULTY)
 
 
 def run(config_path):
@@ -242,10 +250,16 @@ def run(config_path):
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
     # Get the winning genome from the play function
-    winner = pop.run(train, 70)
-
-
-if __name__ == "__main__":
+    winner = pop.run(train, 20)
+    print('\nBest genome:\n{!s}'.format(winner))
+    # Save best genome
+    pickle.dump(winner, open('best_genome.p', "wb"))
+    
+def main():
     local_directory = os.path.dirname(__file__)
     config_path = os.path.join(local_directory, 'configuration.txt')
     run(config_path)
+
+if __name__ == "__main__":
+    main()
+    
