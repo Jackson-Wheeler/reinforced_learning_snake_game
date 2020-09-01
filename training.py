@@ -1,5 +1,7 @@
 from snake import *
 import pygame, sys, time, random
+import neat
+import os
 
 # DIFFICULTY settings
 # Easy      ->  10
@@ -14,6 +16,14 @@ BLACK = pygame.Color(0, 0, 0)
 WHITE = pygame.Color(255, 255, 255)
 RED = pygame.Color(255, 0, 0)
 
+SCORE = 0
+
+# Window size
+FRAME_DIM = (780, 420)
+# Initialise game window
+pygame.display.set_caption('Snake Eater')
+GAME_WINDOW = pygame.display.set_mode((FRAME_DIM[0], FRAME_DIM[1]))
+
 
 # Other Functions
 def check_for_errors():
@@ -27,105 +37,106 @@ def check_for_errors():
     else:
         print('[+] Game successfully initialised')
 
-def get_key_pressed(event):
-    key_pressed = None
-    # Whenever a key is pressed down
-    if event.type == pygame.KEYDOWN:
-        # W -> Up; S -> Down; A -> Left; D -> Right
-        if event.key == pygame.K_UP or event.key == ord('w'):
-            key_pressed = 0
-            #snake.change_to = 'UP'
-        elif event.key == pygame.K_DOWN or event.key == ord('s'):
-            key_pressed = 1
-            #snake.change_to = 'DOWN'
-        elif event.key == pygame.K_LEFT or event.key == ord('a'):
-            key_pressed = 2
-            #snake.change_to = 'LEFT'
-        elif event.key == pygame.K_RIGHT or event.key == ord('d'):
-            key_pressed = 3
-            #snake.change_to = 'RIGHT'
-        # Esc -> Create event to quit the game
-        # if event.key == pygame.K_ESCAPE:
-        #     pygame.event.post(pygame.event.Event(pygame.QUIT))
-    return key_pressed
-
-def game_over():
-    my_font = pygame.font.SysFont('times new roman', 90)
-    game_over_surface = my_font.render('YOU DIED', True, RED)
-    game_over_rect = game_over_surface.get_rect()
-    game_over_rect.midtop = (FRAME_DIM[0]/2, FRAME_DIM[1]/4)
-    GAME_WINDOW.fill(BLACK)
-    GAME_WINDOW.blit(game_over_surface, game_over_rect)
-    show_score(0, RED, 'times', 20)
-    pygame.display.flip()
-    time.sleep(3)
-    pygame.quit()
-    sys.exit()
-
-def show_score(choice, color, font, size):
-    score_font = pygame.font.SysFont(font, size)
-    score_surface = score_font.render('Score : ' + str(score), True, color)
-    score_rect = score_surface.get_rect()
-    if choice == 1:
-        score_rect.midtop = (FRAME_DIM[0]/10, 15)
-    else:
-        score_rect.midtop = (FRAME_DIM[0]/2, FRAME_DIM[1]/1.25)
-    GAME_WINDOW.blit(score_surface, score_rect)
-    # pygame.display.flip()
-
-# Main
-def train():
-    # Window size
-    FRAME_DIM = (720, 480)
+def get_inputs(x, snake):
+    head_x, head_y = snake.snake_pos
+    food_x, food_y = snake.food.food_pos
+    dist_to_food_x = head_x - food_x
+    dist_to_food_y = head_y - food_y
     
+    if snake.direction == 'UP':
+        # Walls
+        dist_straight_wall = head_y
+        dist_left_wall = head_x
+        dist_right_wall = FRAME_DIM[0] - head_x
+        # Food 
+        dist_straight_food = dist_to_food_y
+        dist_left_food = dist_to_food_x
+        dist_right_food = -dist_to_food_x
+        
+    elif snake.direction == 'DOWN':
+        # Walls
+        dist_straight_wall = FRAME_DIM[1] - head_y
+        dist_left_wall = FRAME_DIM[0] - head_x
+        dist_right_wall = head_x
+        # Food 
+        dist_straight_food = -dist_to_food_y
+        dist_left_food = -dist_to_food_x
+        dist_right_food = dist_to_food_x
+        
+    elif snake.direction == 'LEFT':
+        # Walls
+        dist_straight_wall = head_x
+        dist_left_wall = FRAME_DIM[1] - head_y
+        dist_right_wall = head_y
+        # Food 
+        dist_straight_food = dist_to_food_x
+        dist_left_food = -dist_to_food_y
+        dist_right_food = dist_to_food_y
+        
+    elif snake.direction == 'RIGHT':
+        # Walls
+        dist_straight_wall = FRAME_DIM[0] - head_x
+        dist_left_wall = head_y
+        dist_right_wall = FRAME_DIM[1] - head_y
+        # Food 
+        dist_straight_food = -dist_to_food_x
+        dist_left_food = dist_to_food_y
+        dist_right_food = -dist_to_food_y
+    
+    return [dist_straight_wall, dist_straight_food, 
+            dist_left_wall, dist_left_food,
+            dist_right_wall, dist_right_food]
+    
+# Main
+def train(genomes,config):
     # Check for errors
     check_for_errors()
-
-    # Initialise game window
-    pygame.display.set_caption('Snake Eater')
-    GAME_WINDOW = pygame.display.set_mode((FRAME_DIM[0], FRAME_DIM[1]))
 
     # FPS (frames per second) controller
     fps_controller = pygame.time.Clock()
 
-    # Create Snake objects
-    snakes = list()
-    num_snakes = 1
-    for _ in range(num_snakes):
-        snake = Snake(100, 50, FRAME_DIM)
-        snakes.append(snake)
+    # Create object lists
+    snakes = []
+    ge = []
+    nets = []
+    for id, g in genomes:
+        net = neat.nn.FeedForwardNetwork.create(g,config)
+        nets.append(net)
+        g.fitness = 0
+        ge.append(g)
+        snakes.append(Snake(random.randrange(0,FRAME_DIM[0],10), random.randrange(0,FRAME_DIM[1],10), FRAME_DIM))
 
     # Main logic
     running = True
-    while running:    
+    while running:
         for event in pygame.event.get():
             # Quit Functionality
             if event.type == pygame.QUIT:
                 pygame.quit()
-                sys.exit() 
-            for snake in snakes:
-                # Get pressed key / Neural network output
-                key_pressed = get_key_pressed(event)
-                # output = ....
-                
-                # Resond to pressed key
-                if key_pressed == 0:
-                    snake.change_to = 'UP'
-                elif key_pressed == 1:
-                    snake.change_to = 'DOWN'
-                elif key_pressed == 2:
-                    snake.change_to = 'LEFT'
-                elif key_pressed == 3:
-                    snake.change_to = 'RIGHT'
+                sys.exit()
+
+        # getting output from neural networks
+        for x, snake in enumerate(snakes):
             
-        # Move snake
-        for snake in snakes:
-            # Move snake (and spawn food)
-            snake.move() 
+            inputs = get_inputs(x, snake)
+            # [dist_straight_wall, dist_straight_food, dist_straight_tail, dist_left_wall,
+            # dist_left_food, dist_left_tail, dist_right_wall, dist_right_food, dist_right_tail]
             
+            outputs = nets[x].activate(inputs)
+            output = outputs.index(max(outputs))
+                        
+            #mapping output to direction 0 = straignt, 1 = turn_right, 2 = turn_left
+            if output == 0:
+                snake.move('straight', ge[x]) # Keep same direction
+            elif output == 1:
+                snake.move('left', ge[x])
+            elif output == 2:
+                snake.move('right', ge[x])
+
+
         # Draw
         GAME_WINDOW.fill(BLACK)
-        for snake in snakes:       
+        for snake in snakes:
             snake.draw_snake_and_food(GAME_WINDOW)
 
         # Snake Losing Conditions
@@ -133,31 +144,59 @@ def train():
             try:
                 # Getting out of bounds
                 if snake.snake_pos[0] < 0 or snake.snake_pos[0] > FRAME_DIM[0]-10:
+                    ge[x].fitness -= 10 #removing fitness for crossing x boundaries
                     snakes.pop(x)
+                    ge.pop(x)
+                    nets.pop(x)
                 elif snake.snake_pos[1] < 0 or snake.snake_pos[1] > FRAME_DIM[1]-10:
+                    ge[x].fitness -= 10 #removing fitness for crossing y boundaries
                     snakes.pop(x)
+                    ge.pop(x)
+                    nets.pop(x)
                 # Touching the snake body
                 for block in snake.snake_body[1:]:
                     if snake.snake_pos[0] == block[0] and snake.snake_pos[1] == block[1]:
+                        ge[x].fitness -= 10 #removing fitness for hitting a part of the body
                         snakes.pop(x)
+                        ge.pop(x)
+                        nets.pop(x)
+                # Too long with same size
+                if snake.time_in_current_size > 150:
+                    ge[x].fitness -= 10 # remove fitness
+                    snakes.pop(x)
+                    ge.pop(x)
+                    nets.pop(x)
+                    
             except IndexError:
                 pass
-                  
-            # show_score(1, WHITE, 'consolas', 20)
-            
-            
+
         # Check if no more snakes left
         if len(snakes) == 0:
             running = False
             print("Snake Died")
-        
+
         # Refresh game screen
         pygame.display.update()
         # Refresh rate
         fps_controller.tick(DIFFICULTY)
 
-def main():
-    train()
+
+def run(config_path):
+    # Upload the config file
+    config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                    neat.DefaultSpeciesSet, neat.DefaultStagnation,
+                    config_path)
+    # Create a population
+    pop = neat.Population(config)
+    # Print population
+    pop.add_reporter(neat.StdOutReporter(True))
+    stats = neat.StatisticsReporter()
+    pop.add_reporter(stats)
+    # Get the winning genome from the play function
+    winner = pop.run(train, 70)
+
 
 if __name__ == "__main__":
-    train()
+    local_directory = os.path.dirname(__file__)
+    config_path = os.path.join(local_directory, 'configuration.txt')
+    run(config_path)
