@@ -19,7 +19,7 @@ RED = pygame.Color(255, 0, 0)
 SCORE = 0
 
 # Window size
-FRAME_DIM = (780, 400)
+FRAME_DIM = (780, 420)
 # Initialise game window
 pygame.display.set_caption('Snake Eater')
 GAME_WINDOW = pygame.display.set_mode((FRAME_DIM[0], FRAME_DIM[1]))
@@ -36,28 +36,6 @@ def check_for_errors():
         sys.exit(-1)
     else:
         print('[+] Game successfully initialised')
-
-def get_key_pressed(event):
-    key_pressed = None
-    # Whenever a key is pressed down
-    if event.type == pygame.KEYDOWN:
-        # W -> Up; S -> Down; A -> Left; D -> Right
-        if event.key == pygame.K_UP or event.key == ord('w'):
-            key_pressed = 0
-            #snake.change_to = 'UP'
-        elif event.key == pygame.K_DOWN or event.key == ord('s'):
-            key_pressed = 1
-            #snake.change_to = 'DOWN'
-        elif event.key == pygame.K_LEFT or event.key == ord('a'):
-            key_pressed = 2
-            #snake.change_to = 'LEFT'
-        elif event.key == pygame.K_RIGHT or event.key == ord('d'):
-            key_pressed = 3
-            #snake.change_to = 'RIGHT'
-        # Esc -> Create event to quit the game
-        # if event.key == pygame.K_ESCAPE:
-        #     pygame.event.post(pygame.event.Event(pygame.QUIT))
-    return key_pressed
 
 def get_inputs(x, snake):
     head_x, head_y = snake.snake_pos
@@ -104,16 +82,11 @@ def get_inputs(x, snake):
         dist_straight_food = -dist_to_food_x
         dist_left_food = dist_to_food_y
         dist_right_food = -dist_to_food_y
-    if x == 0: 
-        pass    
-        #print('SNAKE', x)
-        #print("Head:", snake.snake_pos, snake.food.food_pos, snake.direction) 
     
     return [dist_straight_wall, dist_straight_food, 
             dist_left_wall, dist_left_food,
             dist_right_wall, dist_right_food]
     
-
 # Main
 def train(genomes,config):
     # Check for errors
@@ -122,22 +95,16 @@ def train(genomes,config):
     # FPS (frames per second) controller
     fps_controller = pygame.time.Clock()
 
-    #number of snakes and food temporary until we replace with number of genomes
-    #num_snakes_food = 1
-
     # Create object lists
     snakes = []
     ge = []
     nets = []
-
-
     for id, g in genomes:
         net = neat.nn.FeedForwardNetwork.create(g,config)
         nets.append(net)
         g.fitness = 0
         ge.append(g)
         snakes.append(Snake(random.randrange(0,FRAME_DIM[0],10), random.randrange(0,FRAME_DIM[1],10), FRAME_DIM))
-
 
     # Main logic
     running = True
@@ -157,12 +124,7 @@ def train(genomes,config):
             
             outputs = nets[x].activate(inputs)
             output = outputs.index(max(outputs))
-            
-            if x == 0:
-                pass
-                #print(inputs)
-                #print(outputs)
-            
+                        
             #mapping output to direction 0 = straignt, 1 = turn_right, 2 = turn_left
             if output == 0:
                 snake.move('straight', ge[x]) # Keep same direction
@@ -207,9 +169,6 @@ def train(genomes,config):
                     
             except IndexError:
                 pass
-
-            # show_score(1, WHITE, 'consolas', 20)
-
 
         # Check if no more snakes left
         if len(snakes) == 0:
