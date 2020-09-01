@@ -42,7 +42,9 @@ def get_inputs(x, snake):
     food_x, food_y = snake.food.food_pos
     dist_to_food_x = head_x - food_x
     dist_to_food_y = head_y - food_y
-    
+    snakebody = snake.snake_body[1:len(snake.snake_body)]
+
+
     if snake.direction == 'UP':
         # Walls
         dist_straight_wall = head_y
