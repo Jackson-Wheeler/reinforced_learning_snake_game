@@ -250,7 +250,7 @@ def run(config_path):
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
     # Get the winning genome from the play function
-    winner = pop.run(train, 20)
+    winner = pop.run(train, 50)
     print('\nBest genome:\n{!s}'.format(winner))
     # Save best genome
     pickle.dump(winner, open('best_genome.p', "wb"))
