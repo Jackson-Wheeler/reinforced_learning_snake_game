@@ -19,11 +19,14 @@ RED = pygame.Color(255, 0, 0)
 
 SCORE = 0
 
+GRAPHICS = True
+
 # Window size
 FRAME_DIM = (780, 420)
 # Initialise game window
-pygame.display.set_caption('Snake Eater')
-GAME_WINDOW = pygame.display.set_mode((FRAME_DIM[0], FRAME_DIM[1]))
+if GRAPHICS:
+    pygame.display.set_caption('Snake Eater')
+    GAME_WINDOW = pygame.display.set_mode((FRAME_DIM[0], FRAME_DIM[1]))
 
 
 # Other Functions
@@ -57,9 +60,9 @@ def get_inputs(x, snake):
         dist_left_food = dist_to_food_x
         dist_right_food = -dist_to_food_x
         # Body distances
-        dist_straight_body = max(distances_to_body['UP'])
-        dist_left_body = max(distances_to_body['LEFT'])
-        dist_right_body = max(distances_to_body['RIGHT'])
+        dist_straight_body = min(distances_to_body['UP'])
+        dist_left_body = min(distances_to_body['LEFT'])
+        dist_right_body = min(distances_to_body['RIGHT'])
         
     elif snake.direction == 'DOWN':
         # Walls
@@ -71,9 +74,9 @@ def get_inputs(x, snake):
         dist_left_food = -dist_to_food_x
         dist_right_food = dist_to_food_x
         # Body distances
-        dist_straight_body = max(distances_to_body['DOWN'])
-        dist_left_body = max(distances_to_body['RIGHT'])
-        dist_right_body = max(distances_to_body['LEFT'])
+        dist_straight_body = min(distances_to_body['DOWN'])
+        dist_left_body = min(distances_to_body['RIGHT'])
+        dist_right_body = min(distances_to_body['LEFT'])
         
     elif snake.direction == 'LEFT':
         # Walls
@@ -85,9 +88,9 @@ def get_inputs(x, snake):
         dist_left_food = -dist_to_food_y
         dist_right_food = dist_to_food_y
         # Body distances
-        dist_straight_body = max(distances_to_body['LEFT'])
-        dist_left_body = max(distances_to_body['DOWN'])
-        dist_right_body = max(distances_to_body['UP'])
+        dist_straight_body = min(distances_to_body['LEFT'])
+        dist_left_body = min(distances_to_body['DOWN'])
+        dist_right_body = min(distances_to_body['UP'])
         
     elif snake.direction == 'RIGHT':
         # Walls
@@ -99,17 +102,23 @@ def get_inputs(x, snake):
         dist_left_food = dist_to_food_y
         dist_right_food = -dist_to_food_y
         # Body distances
-        dist_straight_body = max(distances_to_body['RIGHT'])
-        dist_left_body = max(distances_to_body['UP'])
-        dist_right_body = max(distances_to_body['DOWN'])
+        dist_straight_body = min(distances_to_body['RIGHT'])
+        dist_left_body = min(distances_to_body['UP'])
+        dist_right_body = min(distances_to_body['DOWN'])
+        
+    # Obstacles distances
+    dist_straight_obstacle = min(dist_straight_wall, dist_straight_wall)
+    dist_left_obstacle = min(dist_left_wall, dist_left_wall)
+    dist_right_obstacle = min(dist_right_wall, dist_right_wall)
             
-    return [dist_straight_wall, dist_straight_food, dist_straight_body,
-            dist_left_wall, dist_left_food, dist_left_body,
-            dist_right_wall, dist_right_food, dist_right_body,
+    return [dist_straight_obstacle, dist_straight_food,
+            dist_left_obstacle, dist_left_food,
+            dist_right_obstacle, dist_right_food,
             snake.time_in_current_size]
 
 def get_distances_to_body(snake, head_x, head_y):
-    tail_distances = {'UP':[0], 'DOWN':[0], 'LEFT':[0], 'RIGHT':[0]}
+    tail_distances = {'UP': [head_y], 'DOWN': [FRAME_DIM[1] - head_y],
+                      'LEFT': [head_x], 'RIGHT': [FRAME_DIM[0] - head_x]}
     # for each block of the snake body
     for x, block_pos in enumerate(snake.snake_body):
         if x == 0:
@@ -153,8 +162,12 @@ def train(genomes,config):
         ge.append(g)
         x = random.randrange(0, FRAME_DIM[0], 10)
         y = random.randrange(0, FRAME_DIM[1], 10)
-        length = 3
+        length = 5
         snakes.append(Snake(x, y, length, FRAME_DIM))
+        
+    num_out_bounds = 0
+    num_hit_themself = 0
+    num_run_out_time = 0
 
     # Main logic
     running = True
@@ -169,9 +182,9 @@ def train(genomes,config):
         for x, snake in enumerate(snakes):
             
             inputs = get_inputs(x, snake)
-            # [dist_straight_wall, dist_straight_food, dist_straight_tail, dist_left_wall,
-            # dist_left_food, dist_left_tail, dist_right_wall, dist_right_food, dist_right_tail]
-            
+            # if x == 0:
+            #     print(snake.direction, snake.snake_pos)
+            #     print(inputs)            
             outputs = nets[x].activate(inputs)
             output = outputs.index(max(outputs))
                         
@@ -186,9 +199,10 @@ def train(genomes,config):
 
 
         # Draw
-        GAME_WINDOW.fill(BLACK)
-        for snake in snakes:
-            snake.draw_snake_and_food(GAME_WINDOW)
+        if GRAPHICS:
+            GAME_WINDOW.fill(BLACK)
+            for snake in snakes:
+                snake.draw_snake_and_food(GAME_WINDOW)
 
         # Snake Losing Conditions
         for x, snake in enumerate(snakes):
@@ -199,11 +213,13 @@ def train(genomes,config):
                     snakes.pop(x)
                     ge.pop(x)
                     nets.pop(x)
+                    num_out_bounds += 1
                 elif snake.snake_pos[1] < 0 or snake.snake_pos[1] > FRAME_DIM[1]-10:
                     ge[x].fitness -= 200 #removing fitness for crossing y boundaries
                     snakes.pop(x)
                     ge.pop(x)
                     nets.pop(x)
+                    num_out_bounds += 1
                 # Touching the snake body
                 for block in snake.snake_body[1:]:
                     if snake.snake_pos[0] == block[0] and snake.snake_pos[1] == block[1]:
@@ -211,12 +227,20 @@ def train(genomes,config):
                         snakes.pop(x)
                         ge.pop(x)
                         nets.pop(x)
+                        num_hit_themself += 1
+                        # if len(snakes) < 10:
+                        #     print("Hit Myself") 
                 # Too long with same size
-                if snake.time_in_current_size > 150:
-                    ge[x].fitness -= 200 # remove fitness
+                min_time_threshold = 1.2 * (FRAME_DIM[0]/10 + FRAME_DIM[1]/10)
+                time_threshold = min_time_threshold + (2 * length)
+                if snake.time_in_current_size > time_threshold:
+                    ge[x].fitness -= 1000 # remove fitness
                     snakes.pop(x)
                     ge.pop(x)
                     nets.pop(x)
+                    num_run_out_time += 1
+                    # if len(snakes) < 10:
+                    #     print("Ran out of Time")
                     
             except IndexError:
                 pass
@@ -232,10 +256,13 @@ def train(genomes,config):
         # Check if no more snakes left
         if len(snakes) == 0:
             running = False
-            print("Snakes Died")
+            print("Out of Bounds:", num_out_bounds)
+            print("Hit Themself:", num_hit_themself)
+            print("Ran out of Time:", num_run_out_time)
             
         # # Refresh game screen
-        pygame.display.update()
+        if GRAPHICS:
+            pygame.display.update()
         # # Refresh rate
         # fps_controller.tick(DIFFICULTY)
 
