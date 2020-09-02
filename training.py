@@ -44,7 +44,7 @@ def get_inputs(x, snake):
     dist_to_food_x = head_x - food_x
     dist_to_food_y = head_y - food_y
     # Body Distances
-    distances_to_body = get_distances_to_body(snake, head_x, head_y)
+    distances_to_body = snake.get_distances_to_body( head_x, head_y)
 
     # Walls and Food
     if snake.direction == 'UP':
@@ -57,9 +57,9 @@ def get_inputs(x, snake):
         dist_left_food = dist_to_food_x
         dist_right_food = -dist_to_food_x
         # Body distances
-        dist_straight_body = max(distances_to_body['UP'])
-        dist_left_body = max(distances_to_body['LEFT'])
-        dist_right_body = max(distances_to_body['RIGHT'])
+        dist_straight_body = min(distances_to_body['UP'])
+        dist_left_body = min(distances_to_body['LEFT'])
+        dist_right_body = min(distances_to_body['RIGHT'])
 
     elif snake.direction == 'DOWN':
         # Walls
@@ -105,33 +105,38 @@ def get_inputs(x, snake):
 
     return [dist_straight_wall, dist_straight_food, dist_straight_body,
             dist_left_wall, dist_left_food, dist_left_body,
-            dist_right_wall, dist_right_food, dist_right_body,
-            snake.time_in_current_size]
+            dist_right_wall, dist_right_food, dist_right_body]
 
+#
+# def check_distances_to_body(snake, headx, heady):
+#     new_distances_to_body = get_distances_to_body(snake, headx, heady)
+#
 
-def get_distances_to_body(snake, head_x, head_y):
-    tail_distances = {'UP': [0], 'DOWN': [0], 'LEFT': [0], 'RIGHT': [0]}
-    # for each block of the snake body
-    for x, block_pos in enumerate(snake.snake_body):
-        if x == 0:
-            continue  # index 0 has pos of snake head
-        # UP/DOWN (x-value equal)
-        if block_pos[0] == head_x:
-            # UP
-            if block_pos[1] < head_y:
-                tail_distances['UP'].append(head_y - block_pos[1])
-            # Down
-            elif block_pos[1] > head_y:
-                tail_distances['DOWN'].append(block_pos[1] - head_y)
-        # Right/Left (y-value equal)
-        elif block_pos[1] == head_y:
-            # Right
-            if block_pos[0] > head_x:
-                tail_distances['RIGHT'].append(block_pos[0] - head_x)
-            # Left
-            elif block_pos[0] < head_x:
-                tail_distances['LEFT'].append(head_x - block_pos[1])
-    return tail_distances
+#
+# def get_distances_to_body(snake, head_x, head_y):
+#     tail_distances = {'UP': [0], 'DOWN': [0], 'LEFT': [0], 'RIGHT': [0]}
+#     # for each block of the snake body
+#     for x, block_pos in enumerate(snake.snake_body):
+#         if x == 0:
+#             continue  # index 0 has pos of snake head
+#         # UP/DOWN (x-value equal)
+#         if block_pos[0] == head_x:
+#             # UP
+#             if block_pos[1] < head_y:
+#                 tail_distances['UP'].append(head_y - block_pos[1])
+#             # Down
+#             elif block_pos[1] > head_y:
+#                 tail_distances['DOWN'].append(block_pos[1] - head_y)
+#         # Right/Left (y-value equal)
+#         elif block_pos[1] == head_y:
+#             # Right
+#             if block_pos[0] > head_x:
+#                 tail_distances['RIGHT'].append(block_pos[0] - head_x)
+#             # Left
+#             elif block_pos[0] < head_x:
+#                 tail_distances['LEFT'].append(head_x - block_pos[1])
+#     return tail_distances
+
 
 
 # Main
@@ -172,6 +177,11 @@ def train(genomes, config):
             outputs = nets[x].activate(inputs)
             output = outputs.index(max(outputs))
 
+            dist_straight_body = inputs[2]
+            dist_left_body = inputs[5]
+            dist_right_body = inputs[8]
+
+
             # mapping output to direction 0 = straignt, 1 = turn_right, 2 = turn_left
             if output == 0:
                 snake.move('straight', ge[x])  # Keep same direction
@@ -210,7 +220,8 @@ def train(genomes, config):
                         ge.pop(x)
                         nets.pop(x)
                 # Too long with same size
-                if snake.time_in_current_size > 150:
+                time_thresh = 250
+                if snake.time_in_current_size > time_thresh:
                     ge[x].fitness -= 200  # remove fitness
                     snakes.pop(x)
                     ge.pop(x)

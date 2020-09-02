@@ -35,7 +35,7 @@ class Snake:
         self.food.spawn_food()
         # Check distance to food
         self.checkDist(genome, old_distx, old_disty)
-                  
+
     def turn(self, turn):
         all_dir = ['UP', 'RIGHT', 'DOWN', 'LEFT']
         # Turn
@@ -105,6 +105,29 @@ class Snake:
         #totalDist = math.sqrt((disty) ** 2 + (disty) ** 2)
         return distx, disty
 
+    def get_distances_to_body(self, head_x, head_y):
+        tail_distances = {'UP': [0], 'DOWN': [0], 'LEFT': [0], 'RIGHT': [0]}
+        # for each block of the snake body
+        for x, block_pos in enumerate(self.snake_body):
+            if x == 0:
+                continue  # index 0 has pos of snake head
+            # UP/DOWN (x-value equal)
+            if block_pos[0] == head_x:
+                # UP
+                if block_pos[1] < head_y:
+                    tail_distances['UP'].append(head_y - block_pos[1])
+                # Down
+                elif block_pos[1] > head_y:
+                    tail_distances['DOWN'].append(block_pos[1] - head_y)
+            # Right/Left (y-value equal)
+            elif block_pos[1] == head_y:
+                # Right
+                if block_pos[0] > head_x:
+                    tail_distances['RIGHT'].append(block_pos[0] - head_x)
+                # Left
+                elif block_pos[0] < head_x:
+                    tail_distances['LEFT'].append(head_x - block_pos[1])
+        return tail_distances
 
     # Draw
     def draw_snake_and_food(self, GAME_WINDOW):
