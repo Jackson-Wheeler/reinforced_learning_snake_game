@@ -198,6 +198,7 @@ def run(config_path):
     winner = pop.run(train, 70)
 
 
+
 if __name__ == "__main__":
     local_directory = os.path.dirname(__file__)
     config_path = os.path.join(local_directory, 'configuration.txt')
