@@ -19,7 +19,7 @@ RED = pygame.Color(255, 0, 0)
 
 SCORE = 0
 
-GRAPHICS = True
+GRAPHICS = False
 
 # Window size
 FRAME_DIM = (780, 420)
@@ -112,20 +112,20 @@ def get_inputs(x, snake):
     dist_right_obstacle = min(dist_right_wall, dist_right_body)
     
     # # Override obstacle distances
-    if dist_straight_obstacle == 10:
-        dist_straight_obstacle = False
-    else:
-        dist_straight_obstacle = True
-    # Left
-    if dist_left_obstacle == 10:
-        dist_left_obstacle = False
-    else:
-        dist_left_obstacle = True
-    # Right
-    if dist_right_obstacle == 10:
-        dist_right_obstacle = False
-    else:
-        dist_right_obstacle = True
+    # if dist_straight_obstacle == 10:
+    #     dist_straight_obstacle = False
+    # else:
+    #     dist_straight_obstacle = True
+    # # Left
+    # if dist_left_obstacle == 10:
+    #     dist_left_obstacle = False
+    # else:
+    #     dist_left_obstacle = True
+    # # Right
+    # if dist_right_obstacle == 10:
+    #     dist_right_obstacle = False
+    # else:
+    #     dist_right_obstacle = True
             
     return [dist_straight_obstacle, dist_straight_food,
             dist_left_obstacle, dist_left_food,
