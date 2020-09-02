@@ -25,7 +25,7 @@ SCORE = 0
 GRAPHICS = True
 
 # Window size
-FRAME_DIM = (7820, 480)
+FRAME_DIM = (720, 480)
 # Initialise game window
 if GRAPHICS:
     pygame.display.set_caption('Snake Eater')
