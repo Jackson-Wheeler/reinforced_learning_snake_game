@@ -10,10 +10,12 @@ GREEN = pygame.Color(0, 255, 0)
 BLUE = pygame.Color(0, 0, 255)
 
 class Snake:
-    def __init__(self, x, y, FRAME_DIM):
+    def __init__(self, x, y, length, FRAME_DIM):
         # Snake pos/body
         self.snake_pos = [x, y]
-        self.snake_body = [[x, y], [x-10, y], [x-(2*10), y]]
+        #self.snake_body = [[x, y], [x-10, y], [x-(2*10), y]]
+        self.length = length
+        self.snake_body = self.make_snake_body(self.length)
         # Direction
         self.direction = random.choice(['UP', 'DOWN', 'LEFT', 'RIGHT'])
         self.change_to = self.direction
@@ -22,6 +24,15 @@ class Snake:
         # Add food object
         self.food = Food(FRAME_DIM)
         self.time_in_current_size = 0
+        
+    def make_snake_body(self, length):
+        #[[x, y], [x-10, y], [x-(2*10), y]]
+        x, y = self.snake_pos
+        snake_body = list()
+        for n in range(length):
+            new_x = x - (10 * n)
+            snake_body.append([new_x, y])
+        return snake_body
 
     # Moving
     def move(self, turn, genome):

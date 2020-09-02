@@ -22,8 +22,8 @@ SCORE = 0
 # Window size
 FRAME_DIM = (780, 420)
 # Initialise game window
-# pygame.display.set_caption('Snake Eater')
-# GAME_WINDOW = pygame.display.set_mode((FRAME_DIM[0], FRAME_DIM[1]))
+pygame.display.set_caption('Snake Eater')
+GAME_WINDOW = pygame.display.set_mode((FRAME_DIM[0], FRAME_DIM[1]))
 
 
 # Other Functions
@@ -102,7 +102,7 @@ def get_inputs(x, snake):
         dist_straight_body = max(distances_to_body['RIGHT'])
         dist_left_body = max(distances_to_body['UP'])
         dist_right_body = max(distances_to_body['DOWN'])
-    
+            
     return [dist_straight_wall, dist_straight_food, dist_straight_body,
             dist_left_wall, dist_left_food, dist_left_body,
             dist_right_wall, dist_right_food, dist_right_body,
@@ -151,7 +151,10 @@ def train(genomes,config):
         nets.append(net)
         g.fitness = 0
         ge.append(g)
-        snakes.append(Snake(random.randrange(0,FRAME_DIM[0],10), random.randrange(0,FRAME_DIM[1],10), FRAME_DIM))
+        x = random.randrange(0, FRAME_DIM[0], 10)
+        y = random.randrange(0, FRAME_DIM[1], 10)
+        length = 3
+        snakes.append(Snake(x, y, length, FRAME_DIM))
 
     # Main logic
     running = True
@@ -183,9 +186,9 @@ def train(genomes,config):
 
 
         # Draw
-        # GAME_WINDOW.fill(BLACK)
-        # for snake in snakes:
-        #     snake.draw_snake_and_food(GAME_WINDOW)
+        GAME_WINDOW.fill(BLACK)
+        for snake in snakes:
+            snake.draw_snake_and_food(GAME_WINDOW)
 
         # Snake Losing Conditions
         for x, snake in enumerate(snakes):
@@ -209,7 +212,7 @@ def train(genomes,config):
                         ge.pop(x)
                         nets.pop(x)
                 # Too long with same size
-                if snake.time_in_current_size > 250:
+                if snake.time_in_current_size > 150:
                     ge[x].fitness -= 200 # remove fitness
                     snakes.pop(x)
                     ge.pop(x)
@@ -218,7 +221,7 @@ def train(genomes,config):
             except IndexError:
                 pass
         
-        print(len(snakes))
+        # print(len(snakes))
         # if len(snakes) < 50:
         #     max_g = -10000000
         #     for g in ge:
@@ -232,7 +235,7 @@ def train(genomes,config):
             print("Snakes Died")
             
         # # Refresh game screen
-        # pygame.display.update()
+        pygame.display.update()
         # # Refresh rate
         # fps_controller.tick(DIFFICULTY)
 

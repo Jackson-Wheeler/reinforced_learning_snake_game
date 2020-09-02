@@ -156,8 +156,10 @@ def ai_play(genomes, config):
         nets.append(net)
         g.fitness = 0
         ge.append(g)
-        snakes.append(Snake(random.randrange(
-            0, FRAME_DIM[0], 10), random.randrange(0, FRAME_DIM[1], 10), FRAME_DIM))
+        x = random.randrange(0, FRAME_DIM[0], 10)
+        y = random.randrange(0, FRAME_DIM[1], 10)
+        length = 3
+        snakes.append(Snake(x, y, length, FRAME_DIM))
     # Get snake with highest genome fitness
     max_g, x = -10000, 0
     for x, g in enumerate(ge):
