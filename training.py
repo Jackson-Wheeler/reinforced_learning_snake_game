@@ -253,7 +253,7 @@ def run(config_path):
     winner = pop.run(train, 50)
     print('\nBest genome:\n{!s}'.format(winner))
     # Save best genome
-    pickle.dump(winner, open('best_genome.p', "wb"))
+    pickle.dump(pop, open('best_genome.p', "wb"))
     
 def main():
     local_directory = os.path.dirname(__file__)
