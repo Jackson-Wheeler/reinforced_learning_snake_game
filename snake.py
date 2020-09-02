@@ -9,6 +9,9 @@ RED = pygame.Color(255, 0, 0)
 GREEN = pygame.Color(0, 255, 0)
 BLUE = pygame.Color(0, 0, 255)
 
+
+
+
 class Snake:
     def __init__(self, x, y, FRAME_DIM):
         # Snake pos/body
