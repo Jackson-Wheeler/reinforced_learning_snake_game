@@ -20,7 +20,7 @@ class Snake:
         # Score
         self.score = 0
         # Add food object
-        self.food = Food(FRAME_DIM)
+        self.food = Food(FRAME_DIM,self.snake_body)
         self.time_in_current_size = 0
 
     # Moving
@@ -117,16 +117,57 @@ class Snake:
             
 
 class Food:
-    def __init__(self, FRAME_DIM):
+    def __init__(self, FRAME_DIM,snakepositions):
+        self.snakepos = snakepositions
         self.FRAME_DIM = FRAME_DIM
-        self.food_pos = [random.randrange(
-            1, (self.FRAME_DIM[0]//10)) * 10, random.randrange(1, (self.FRAME_DIM[1]//10)) * 10]
+        #self.food_pos = [random.randrange(
+            #1, (self.FRAME_DIM[0]//10)) * 10, random.randrange(1, (self.FRAME_DIM[1]//10)) * 10]
+        self.food_pos = self.weedout()
         self.food_spawn = True
-        
+
+    def weedout(self):
+        xrange = range(self.FRAME_DIM[0])
+        yrange = range(self.FRAME_DIM[1])
+
+        for pair in self.snakepos:
+            if pair[0] in xrange:
+                a = pair[0]
+            for i, val in enumerate(xrange):
+                if val == a:
+                    xrange.pop(i)
+                    xrange.pop(i)
+                    xrange.pop(i)
+                    xrange.pop(i)
+                    xrange.pop(i)
+                    xrange.pop(i)
+                    xrange.pop(i)
+                    xrange.pop(i)
+                    xrange.pop(i)
+                    xrange.pop(i)
+            if pair[1] in yrange:
+                b = pair[1]
+            for i, val in enumerate(yrange):
+                if val == b:
+                    yrange.pop(i)
+                    yrange.pop(i)
+                    yrange.pop(i)
+                    yrange.pop(i)
+                    yrange.pop(i)
+                    yrange.pop(i)
+                    yrange.pop(i)
+                    yrange.pop(i)
+                    yrange.pop(i)
+                    yrange.pop(i)
+
+        newx = random.randrange(xrange[0],xrange[len(xrange)-1],10)
+        newy = random.randrange(yrange[0], yrange[len(yrange) - 1], 10)
+
+        return [newx,newy]
+
     def spawn_food(self):
         if not self.food_spawn:
-            self.food_pos = [random.randrange(
-                1, (self.FRAME_DIM[0]//10)) * 10, random.randrange(1, (self.FRAME_DIM[1]//10)) * 10]
+            #self.food_pos = [random.randrange(1, (self.FRAME_DIM[0]//10)) * 10, random.randrange(1, (self.FRAME_DIM[1]//10)) * 10]
+            self.food_pos = self.weedout()
         self.food_spawn = True
 
     def draw_food(self, GAME_WINDOW):
