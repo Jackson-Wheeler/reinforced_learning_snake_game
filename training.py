@@ -180,7 +180,7 @@ def train(genomes,config):
         # Refresh game screen
         pygame.display.update()
         # Refresh rate
-        fps_controller.tick(DIFFICULTY)
+        #fps_controller.tick(DIFFICULTY)
 
 
 def run(config_path):
