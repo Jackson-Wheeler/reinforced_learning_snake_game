@@ -174,7 +174,7 @@ def ai_play(genomes, config):
         if g.fitness is not None:
             net = neat.nn.FeedForwardNetwork.create(g, config)
             nets.append(net)
-            print(g.fitness)
+            # print(g.fitness)
             ge.append(g)
             x = random.randrange(0, FRAME_DIM[0], 10)
             y = random.randrange(0, FRAME_DIM[1], 10)
@@ -188,11 +188,13 @@ def ai_play(genomes, config):
             max_g = g.fitness
             best_idx = x
     # Only one snake
-    print("MAX G:", max_g)
+    # print("MAX G:", max_g)
     snakes = [snakes[best_idx]]
     ge = [ge[best_idx]]
     nets = [nets[best_idx]]
-    print(ge[0].fitness)
+    # print(ge[0].fitness)
+    
+    input("Press enter to start game")
 
     # Main logic
     running = True
