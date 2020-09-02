@@ -20,10 +20,10 @@ RED = pygame.Color(255, 0, 0)
 SCORE = 0
 
 # Window size
-FRAME_DIM = (780, 420)
+FRAME_DIM = (720, 480)
 # Initialise game window
-# pygame.display.set_caption('Snake Eater')
-# GAME_WINDOW = pygame.display.set_mode((FRAME_DIM[0], FRAME_DIM[1]))
+pygame.display.set_caption('Snake Eater')
+GAME_WINDOW = pygame.display.set_mode((FRAME_DIM[0], FRAME_DIM[1]))
 
 
 # Other Functions
@@ -141,6 +141,7 @@ def train(genomes,config):
 
     # FPS (frames per second) controller
     fps_controller = pygame.time.Clock()
+    draw_threshold = 1000
 
     # Create object lists
     snakes = []
@@ -151,8 +152,12 @@ def train(genomes,config):
         nets.append(net)
         g.fitness = 0
         ge.append(g)
-        snakes.append(Snake(random.randrange(0,FRAME_DIM[0],10), random.randrange(0,FRAME_DIM[1],10), FRAME_DIM))
+        length = 3
+        x = random.randrange(0, FRAME_DIM[0], 10)
+        y = random.randrange(0, FRAME_DIM[1], 10)
+        snakes.append(Snake(x, y, length, FRAME_DIM))
 
+    last_printed = 'Nothing'
     # Main logic
     running = True
     while running:
@@ -168,9 +173,12 @@ def train(genomes,config):
             inputs = get_inputs(x, snake)
             # [dist_straight_wall, dist_straight_food, dist_straight_tail, dist_left_wall,
             # dist_left_food, dist_left_tail, dist_right_wall, dist_right_food, dist_right_tail]
+            if x == 0:
+                outputs = nets[x].activate(inputs)
+                output = outputs.index(max(outputs))
             
-            outputs = nets[x].activate(inputs)
-            output = outputs.index(max(outputs))
+            #print("Snake:", x, "Direction:", snake.direction)
+            #print("L:", inputs[5], "S:", inputs[2], "R:", inputs[8])
                         
             #mapping output to direction 0 = straignt, 1 = turn_right, 2 = turn_left
             if output == 0:
@@ -183,9 +191,10 @@ def train(genomes,config):
 
 
         # Draw
-        # GAME_WINDOW.fill(BLACK)
-        # for snake in snakes:
-        #     snake.draw_snake_and_food(GAME_WINDOW)
+        if len(snakes) < draw_threshold:
+            GAME_WINDOW.fill(BLACK)
+            for snake in snakes:
+                snake.draw_snake_and_food(GAME_WINDOW)
 
         # Snake Losing Conditions
         for x, snake in enumerate(snakes):
@@ -208,31 +217,43 @@ def train(genomes,config):
                         snakes.pop(x)
                         ge.pop(x)
                         nets.pop(x)
+                        if len(snakes) < 10:
+                            print("Hit Myself")
                 # Too long with same size
+                min_time_threshold = 1.2 * (FRAME_DIM[0]/10 + FRAME_DIM[1]/10)
+                time_threshold = min_time_threshold + (2 * length)
                 if snake.time_in_current_size > 250:
                     ge[x].fitness -= 200 # remove fitness
                     snakes.pop(x)
                     ge.pop(x)
                     nets.pop(x)
+                    if len(snakes) < 10:
+                        print("Ran out of Time")
                     
             except IndexError:
                 pass
-        
-        print(len(snakes))
-        # if len(snakes) < 50:
-        #     max_g = -10000000
-        #     for g in ge:
-        #         if g.fitness > max_g:
-        #             max_g = g.fitness
-        #     print(max_g)
+         
+         # Print
+        length = len(snakes)
+        if length > 100:
+            if length % 100 == 0:
+                if length != last_printed:
+                    print(length)
+                    last_printed = length
+        else:
+            if length % 10 == 0:
+                if length != last_printed:
+                    print(length)
+                    last_printed = length
+                
                 
         # Check if no more snakes left
         if len(snakes) == 0:
             running = False
-            print("Snakes Died")
             
         # # Refresh game screen
-        # pygame.display.update()
+        if length < draw_threshold:
+            pygame.display.update()
         # # Refresh rate
         # fps_controller.tick(DIFFICULTY)
 
@@ -250,10 +271,10 @@ def run(config_path):
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
     # Get the winning genome from the play function
-    winner = pop.run(train, 20)
+    winner = pop.run(train, 1000)
     print('\nBest genome:\n{!s}'.format(winner))
     # Save best genome
-    pickle.dump(winner, open('best_genome.p', "wb"))
+    pickle.dump(pop, open('best_genome.p', "wb"))
     
 def main():
     local_directory = os.path.dirname(__file__)

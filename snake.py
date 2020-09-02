@@ -10,12 +10,13 @@ GREEN = pygame.Color(0, 255, 0)
 BLUE = pygame.Color(0, 0, 255)
 
 class Snake:
-    def __init__(self, x, y, FRAME_DIM):
+    def __init__(self, x, y, length, FRAME_DIM):
         # Snake pos/body
         self.snake_pos = [x, y]
-        self.snake_body = [[x, y], [x-10, y], [x-(2*10), y]]
+        self.length = length
+        self.snake_body = self.make_snake_body(self.length)
         # Direction
-        self.direction = random.choice(['UP', 'DOWN', 'LEFT', 'RIGHT'])
+        self.direction = random.choice(['UP', 'DOWN', 'LEFT', 'RIGHT']) # Body is built to the left so can't face let initially
         self.change_to = self.direction
         # Score
         self.score = 0
@@ -23,6 +24,15 @@ class Snake:
         self.food = Food(FRAME_DIM)
         self.time_in_current_size = 0
 
+    def make_snake_body(self, length):
+        #[[x, y], [x-10, y], [x-(2*10), y]]
+        x, y = self.snake_pos
+        snake_body = list()
+        for n in range(length):
+            new_x = x - (10 * n)
+            snake_body.append([new_x, y])
+        return snake_body     
+    
     # Moving
     def move(self, turn, genome):
         # Old dist
@@ -70,11 +80,13 @@ class Snake:
             self.score += 1
             genome.fitness += 100
             self.time_in_current_size = 0
+            self.length += 1
             self.food.food_spawn = False
         else:
             self.snake_body.pop()
-            genome.fitness -= 0.1 # loses points longer it stays on board
             self.time_in_current_size += 1
+            genome.fitness -= 0.1
+            #genome.fitness -= 0.05 * self.time_in_current_size  # loses points longer it stays on board
             self.food.food_spawn = True
 
     def checkDist(self, genome, old_distx, old_disty):
@@ -83,18 +95,18 @@ class Snake:
         if self.direction == 'UP' or self.direction == 'DOWN':
             if new_disty != 0:
                 if new_disty < old_disty:
-                    genome.fitness += 1.5/new_disty
+                    genome.fitness += 2.0/new_disty
                     # print("New:", genome.fitness, "; Added", 1.0/new_disty)
                 else:
-                    genome.fitness -= 2.0/new_disty
+                    genome.fitness -= 2.5/new_disty
                     # print("New:", genome.fitness, "; Subtracted", 1.5/new_disty)
         elif self.direction == 'LEFT' or self.direction == 'RIGHT':
             if new_distx != 0:
                 if new_distx < old_distx:
-                    genome.fitness += 1.5/new_distx
+                    genome.fitness += 2.0/new_distx
                     # print("New:", genome.fitness, "; Added", 1.0/new_disty)
                 else:
-                    genome.fitness -= 2.0/new_distx
+                    genome.fitness -= 2.5/new_distx
                     # print("New:", genome.fitness,"; Subtracted", 1.5/new_disty)
 
     def distance(self):
@@ -104,7 +116,6 @@ class Snake:
         disty = abs(yvals[0]-yvals[1])
         #totalDist = math.sqrt((disty) ** 2 + (disty) ** 2)
         return distx, disty
-
 
     # Draw
     def draw_snake_and_food(self, GAME_WINDOW):

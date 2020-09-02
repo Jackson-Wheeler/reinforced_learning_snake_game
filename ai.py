@@ -23,7 +23,7 @@ RED = pygame.Color(255, 0, 0)
 SCORE = 0
 
 # Window size
-FRAME_DIM = (780, 420)
+FRAME_DIM = (720, 480)
 # Initialise game window
 pygame.display.set_caption('Snake Eater')
 GAME_WINDOW = pygame.display.set_mode((FRAME_DIM[0], FRAME_DIM[1]))
@@ -158,6 +158,18 @@ def ai_play(genomes, config):
         ge.append(g)
         snakes.append(Snake(random.randrange(
             0, FRAME_DIM[0], 10), random.randrange(0, FRAME_DIM[1], 10), FRAME_DIM))
+    # Get snake with highest genome fitness
+    max_g, x = -10000, 0
+    for x, g in enumerate(ge):
+        if g.fitness > max_g:
+            max_g = g.fitness
+            best_idx = x
+    # Only one snake
+    snakes = [snakes[best_idx]]
+    ge = [ge[best_idx]]
+    nets = [nets[best_idx]]
+            
+        
 
     # Main logic
     running = True
@@ -238,10 +250,11 @@ def run(config_path):
     config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
                                 neat.DefaultSpeciesSet, neat.DefaultStagnation,
                                 config_path)
-    # Load Population from 
+    # Load Population from file
+    pop = neat.Population(config)
     pop = pickle.load(open('best_genome.p', "rb"))
     # Run the game
-    pop.run(ai_play, 70)
+    pop.run(ai_play, 2)
     # Save best genome
 
 
