@@ -107,9 +107,25 @@ def get_inputs(x, snake):
         dist_right_body = min(distances_to_body['DOWN'])
         
     # Obstacles distances
-    dist_straight_obstacle = min(dist_straight_wall, dist_straight_wall)
-    dist_left_obstacle = min(dist_left_wall, dist_left_wall)
-    dist_right_obstacle = min(dist_right_wall, dist_right_wall)
+    dist_straight_obstacle = min(dist_straight_wall, dist_straight_body)
+    dist_left_obstacle = min(dist_left_wall, dist_left_body)
+    dist_right_obstacle = min(dist_right_wall, dist_right_body)
+    
+    # # Override obstacle distances
+    if dist_straight_obstacle == 10:
+        dist_straight_obstacle = False
+    else:
+        dist_straight_obstacle = True
+    # Left
+    if dist_left_obstacle == 10:
+        dist_left_obstacle = False
+    else:
+        dist_left_obstacle = True
+    # Right
+    if dist_right_obstacle == 10:
+        dist_right_obstacle = False
+    else:
+        dist_right_obstacle = True
             
     return [dist_straight_obstacle, dist_straight_food,
             dist_left_obstacle, dist_left_food,
@@ -162,7 +178,7 @@ def train(genomes,config):
         ge.append(g)
         x = random.randrange(0, FRAME_DIM[0], 10)
         y = random.randrange(0, FRAME_DIM[1], 10)
-        length = 200
+        length = 5
         snakes.append(Snake(x, y, length, FRAME_DIM))
         
     num_out_bounds = 0
@@ -182,9 +198,13 @@ def train(genomes,config):
         for x, snake in enumerate(snakes):
             
             inputs = get_inputs(x, snake)
-            # if x == 0:
+            # if len(snakes) == 1:
             #     print(snake.direction, snake.snake_pos)
-            #     print(inputs)            
+            #     print(inputs)
+            #     stop = input()
+                   
+                
+                         
             outputs = nets[x].activate(inputs)
             output = outputs.index(max(outputs))
                         

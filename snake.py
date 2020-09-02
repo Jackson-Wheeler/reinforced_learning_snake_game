@@ -79,7 +79,7 @@ class Snake:
         self.snake_body.insert(0, list(self.snake_pos))
         if self.snake_pos[0] == self.food.food_pos[0] and self.snake_pos[1] == self.food.food_pos[1]:
             self.score += 1
-            genome.fitness += 100
+            genome.fitness += 50
             self.time_in_current_size = 0
             self.food.food_spawn = False
         else:

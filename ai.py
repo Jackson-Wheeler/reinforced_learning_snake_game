@@ -42,7 +42,6 @@ def check_for_errors():
     else:
         print('[+] Game successfully initialised')
 
-
 def get_inputs(x, snake):
     head_x, head_y = snake.snake_pos
     food_x, food_y = snake.food.food_pos
@@ -57,62 +56,82 @@ def get_inputs(x, snake):
         dist_straight_wall = head_y
         dist_left_wall = head_x
         dist_right_wall = FRAME_DIM[0] - head_x
-        # Food
+        # Food 
         dist_straight_food = dist_to_food_y
         dist_left_food = dist_to_food_x
         dist_right_food = -dist_to_food_x
         # Body distances
-        dist_straight_body = max(distances_to_body['UP'])
-        dist_left_body = max(distances_to_body['LEFT'])
-        dist_right_body = max(distances_to_body['RIGHT'])
+        dist_straight_body = min(distances_to_body['UP'])
+        dist_left_body = min(distances_to_body['LEFT'])
+        dist_right_body = min(distances_to_body['RIGHT'])
 
     elif snake.direction == 'DOWN':
         # Walls
         dist_straight_wall = FRAME_DIM[1] - head_y
         dist_left_wall = FRAME_DIM[0] - head_x
         dist_right_wall = head_x
-        # Food
+        # Food 
         dist_straight_food = -dist_to_food_y
         dist_left_food = -dist_to_food_x
         dist_right_food = dist_to_food_x
         # Body distances
-        dist_straight_body = max(distances_to_body['DOWN'])
-        dist_left_body = max(distances_to_body['RIGHT'])
-        dist_right_body = max(distances_to_body['LEFT'])
+        dist_straight_body = min(distances_to_body['DOWN'])
+        dist_left_body = min(distances_to_body['RIGHT'])
+        dist_right_body = min(distances_to_body['LEFT'])
 
     elif snake.direction == 'LEFT':
         # Walls
         dist_straight_wall = head_x
         dist_left_wall = FRAME_DIM[1] - head_y
         dist_right_wall = head_y
-        # Food
+        # Food 
         dist_straight_food = dist_to_food_x
         dist_left_food = -dist_to_food_y
         dist_right_food = dist_to_food_y
         # Body distances
-        dist_straight_body = max(distances_to_body['LEFT'])
-        dist_left_body = max(distances_to_body['DOWN'])
-        dist_right_body = max(distances_to_body['UP'])
+        dist_straight_body = min(distances_to_body['LEFT'])
+        dist_left_body = min(distances_to_body['DOWN'])
+        dist_right_body = min(distances_to_body['UP'])
 
     elif snake.direction == 'RIGHT':
         # Walls
         dist_straight_wall = FRAME_DIM[0] - head_x
         dist_left_wall = head_y
         dist_right_wall = FRAME_DIM[1] - head_y
-        # Food
+        # Food 
         dist_straight_food = -dist_to_food_x
         dist_left_food = dist_to_food_y
         dist_right_food = -dist_to_food_y
         # Body distances
-        dist_straight_body = max(distances_to_body['RIGHT'])
-        dist_left_body = max(distances_to_body['UP'])
-        dist_right_body = max(distances_to_body['DOWN'])
+        dist_straight_body = min(distances_to_body['RIGHT'])
+        dist_left_body = min(distances_to_body['UP'])
+        dist_right_body = min(distances_to_body['DOWN'])
 
-    return [dist_straight_wall, dist_straight_food, dist_straight_body,
-            dist_left_wall, dist_left_food, dist_left_body,
-            dist_right_wall, dist_right_food, dist_right_body,
-            snake.time_in_current_size]
+    # Obstacles distances
+    dist_straight_obstacle = min(dist_straight_wall, dist_straight_body)
+    dist_left_obstacle = min(dist_left_wall, dist_left_body)
+    dist_right_obstacle = min(dist_right_wall, dist_right_body)
 
+    # # Override obstacle distances
+    if dist_straight_obstacle == 10:
+        dist_straight_obstacle = False
+    else:
+        dist_straight_obstacle = True
+    # Left
+    if dist_left_obstacle == 10:
+        dist_left_obstacle = False
+    else:
+        dist_left_obstacle = True
+    # Right
+    if dist_right_obstacle == 10:
+        dist_right_obstacle = False
+    else:
+        dist_right_obstacle = True
+
+    return [dist_straight_obstacle, dist_straight_food,
+            dist_left_obstacle, dist_left_food,
+            dist_right_obstacle, dist_right_food]#,
+            #snake.time_in_current_size]
 
 def get_distances_to_body(snake, head_x, head_y):
     tail_distances = {'UP': [0], 'DOWN': [0], 'LEFT': [0], 'RIGHT': [0]}
