@@ -71,9 +71,9 @@ def get_inputs(x, snake):
         dist_left_food = -dist_to_food_x
         dist_right_food = dist_to_food_x
         # Body distances
-        dist_straight_body = max(distances_to_body['DOWN'])
-        dist_left_body = max(distances_to_body['RIGHT'])
-        dist_right_body = max(distances_to_body['LEFT'])
+        dist_straight_body = min(distances_to_body['DOWN'])
+        dist_left_body = min(distances_to_body['RIGHT'])
+        dist_right_body = min(distances_to_body['LEFT'])
 
     elif snake.direction == 'LEFT':
         # Walls
@@ -85,9 +85,9 @@ def get_inputs(x, snake):
         dist_left_food = -dist_to_food_y
         dist_right_food = dist_to_food_y
         # Body distances
-        dist_straight_body = max(distances_to_body['LEFT'])
-        dist_left_body = max(distances_to_body['DOWN'])
-        dist_right_body = max(distances_to_body['UP'])
+        dist_straight_body = min(distances_to_body['LEFT'])
+        dist_left_body = min(distances_to_body['DOWN'])
+        dist_right_body = min(distances_to_body['UP'])
 
     elif snake.direction == 'RIGHT':
         # Walls
@@ -99,9 +99,9 @@ def get_inputs(x, snake):
         dist_left_food = dist_to_food_y
         dist_right_food = -dist_to_food_y
         # Body distances
-        dist_straight_body = max(distances_to_body['RIGHT'])
-        dist_left_body = max(distances_to_body['UP'])
-        dist_right_body = max(distances_to_body['DOWN'])
+        dist_straight_body = min(distances_to_body['RIGHT'])
+        dist_left_body = min(distances_to_body['UP'])
+        dist_right_body = min(distances_to_body['DOWN'])
 
     return [dist_straight_wall, dist_straight_food, dist_straight_body,
             dist_left_wall, dist_left_food, dist_left_body,
@@ -145,7 +145,7 @@ def train(genomes, config):
     check_for_errors()
 
     # FPS (frames per second) controller
-    fps_controller = pygame.time.Clock()
+    #fps_controller = pygame.time.Clock()
 
     # Create object lists
     snakes = []
@@ -174,13 +174,16 @@ def train(genomes, config):
             # [dist_straight_wall, dist_straight_food, dist_straight_tail, dist_left_wall,
             # dist_left_food, dist_left_tail, dist_right_wall, dist_right_food, dist_right_tail]
 
+            olddist_straight_body = inputs[2]
+            olddist_left_body = inputs[5]
+            olddist_right_body = inputs[8]
+            olddists = (olddist_straight_body,olddist_left_body,olddist_right_body)
+
+
             outputs = nets[x].activate(inputs)
             output = outputs.index(max(outputs))
 
-            dist_straight_body = inputs[2]
-            dist_left_body = inputs[5]
-            dist_right_body = inputs[8]
-
+            snake.checkDistBody(ge[x],olddists)
 
             # mapping output to direction 0 = straignt, 1 = turn_right, 2 = turn_left
             if output == 0:
@@ -220,9 +223,9 @@ def train(genomes, config):
                         ge.pop(x)
                         nets.pop(x)
                 # Too long with same size
-                time_thresh = 250
+                time_thresh = 150
                 if snake.time_in_current_size > time_thresh:
-                    ge[x].fitness -= 200  # remove fitness
+                    #ge[x].fitness -= 200  # remove fitness
                     snakes.pop(x)
                     ge.pop(x)
                     nets.pop(x)
@@ -238,7 +241,7 @@ def train(genomes, config):
         # Refresh game screen
         pygame.display.update()
         # Refresh rate
-        fps_controller.tick(DIFFICULTY)
+        #fps_controller.tick(DIFFICULTY)
 
 
 def run(config_path):

@@ -96,6 +96,46 @@ class Snake:
                 else:
                     genome.fitness -= 2.0/new_distx
                     # print("New:", genome.fitness,"; Subtracted", 1.5/new_disty)
+    def checkDistBody(self,genome, old_dist_body):
+        new_head_x, new_head_y = self.snake_pos
+
+        old_dist_straight_body = old_dist_body[0]
+        old_dist_left_body = old_dist_body[1]
+        old_dist_right_body = old_dist_body[2]
+
+        new_tails = self.get_distances_to_body(new_head_x,new_head_y)
+
+        if self.direction == "UP":
+            new_dist_straight_body = min(new_tails['UP'])
+            new_dist_left_body = min(new_tails['LEFT'])
+            new_dist_right_body = min(new_tails['RIGHT'])
+        if self.direction == "DOWN":
+            new_dist_straight_body = min(new_tails['DOWN'])
+            new_dist_left_body = min(new_tails['RIGHT'])
+            new_dist_right_body = min(new_tails['LEFT'])
+        if self.direction == "LEFT":
+            new_dist_straight_body = min(new_tails['LEFT'])
+            new_dist_left_body = min(new_tails['DOWN'])
+            new_dist_right_body = min(new_tails['UP'])
+        if self.direction == "RIGHT":
+            new_dist_straight_body = min(new_tails['RIGHT'])
+            new_dist_left_body = min(new_tails['UP'])
+            new_dist_right_body = min(new_tails['DOWN'])
+
+        if new_dist_straight_body < old_dist_straight_body:
+            genome.fitness -= 1.5
+        elif new_dist_straight_body > old_dist_straight_body:
+            genome.fitness += 1.0
+        if new_dist_left_body < old_dist_left_body:
+            genome.fitness -= 1.5
+        elif new_dist_left_body > old_dist_left_body:
+            genome.fitness += 1.0
+        if new_dist_right_body < old_dist_right_body:
+            genome.fitness -= 1.5
+        elif new_dist_right_body > old_dist_right_body:
+            genome.fitness += 1.0
+
+
 
     def distance(self):
         xvals = (self.snake_pos[0],self.food.food_pos[0])
