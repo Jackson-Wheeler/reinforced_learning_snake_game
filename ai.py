@@ -196,8 +196,6 @@ def ai_play(genomes, config):
     nets = [nets[best_idx]]
     # print(ge[0].fitness)
 
-    input("Press enter to start game")
-
     # Main logic
     running = True
     while running:
@@ -281,8 +279,11 @@ def run(config_path):
     pop = neat.Population(config)
     pop = pickle.load(open('best_genome.p', "rb"))
     # Run the game
-    pop.run(ai_play, 2)
-    # Save best genome
+    while True:
+        try:
+            pop.run(ai_play, 2)
+        except:
+            continue
 
 
 def main():
