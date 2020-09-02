@@ -45,7 +45,7 @@ class Snake:
         # Spawn Food
         self.food.spawn_food()
         # Check distance to food
-        self.checkDist(genome, old_distx, old_disty)
+        #self.checkDist(genome, old_distx, old_disty)
                   
     def turn(self, turn):
         all_dir = ['UP', 'RIGHT', 'DOWN', 'LEFT']
@@ -84,7 +84,7 @@ class Snake:
             self.food.food_spawn = False
         else:
             self.snake_body.pop()
-            genome.fitness -= 0.1 # loses points longer it stays on board
+            # genome.fitness -= 0.1 # loses points longer it stays on board
             self.time_in_current_size += 1
             self.food.food_spawn = True
 

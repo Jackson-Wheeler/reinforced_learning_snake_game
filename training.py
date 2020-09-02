@@ -113,8 +113,8 @@ def get_inputs(x, snake):
             
     return [dist_straight_obstacle, dist_straight_food,
             dist_left_obstacle, dist_left_food,
-            dist_right_obstacle, dist_right_food,
-            snake.time_in_current_size]
+            dist_right_obstacle, dist_right_food]#,
+            #snake.time_in_current_size]
 
 def get_distances_to_body(snake, head_x, head_y):
     tail_distances = {'UP': [head_y], 'DOWN': [FRAME_DIM[1] - head_y],
@@ -162,7 +162,7 @@ def train(genomes,config):
         ge.append(g)
         x = random.randrange(0, FRAME_DIM[0], 10)
         y = random.randrange(0, FRAME_DIM[1], 10)
-        length = 5
+        length = 200
         snakes.append(Snake(x, y, length, FRAME_DIM))
         
     num_out_bounds = 0
@@ -234,7 +234,7 @@ def train(genomes,config):
                 min_time_threshold = 1.2 * (FRAME_DIM[0]/10 + FRAME_DIM[1]/10)
                 time_threshold = min_time_threshold + (2 * length)
                 if snake.time_in_current_size > time_threshold:
-                    ge[x].fitness -= 1000 # remove fitness
+                    ge[x].fitness -= 200 # remove fitness
                     snakes.pop(x)
                     ge.pop(x)
                     nets.pop(x)
