@@ -177,8 +177,6 @@ def train(genomes, config):
         for x, snake in enumerate(snakes):
 
             inputs = get_inputs(x, snake)
-            # [dist_straight_wall, dist_straight_food, dist_straight_tail, dist_left_wall,
-            # dist_left_food, dist_left_tail, dist_right_wall, dist_right_food, dist_right_tail]
 
             outputs = nets[x].activate(inputs)
             output = outputs.index(max(outputs))

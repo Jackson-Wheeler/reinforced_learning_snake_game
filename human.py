@@ -169,4 +169,5 @@ def main():
         # Refresh rate
         fps_controller.tick(difficulty)
 
-main()
+if __name__ == "__main__":
+    main()
