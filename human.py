@@ -12,7 +12,7 @@ def main():
     # Hard      ->  40
     # Harder    ->  60
     # Impossible->  120
-    difficulty = 25
+    difficulty = 15
 
     # Window size
     frame_size_x = 720
@@ -30,7 +30,7 @@ def main():
 
 
     # Initialise game window
-    pygame.display.set_caption('Snake Eater')
+    pygame.display.set_caption('Gary the Snake')
     game_window = pygame.display.set_mode((frame_size_x, frame_size_y))
 
 
@@ -168,3 +168,5 @@ def main():
         pygame.display.update()
         # Refresh rate
         fps_controller.tick(difficulty)
+
+main()

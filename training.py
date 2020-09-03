@@ -22,7 +22,7 @@ RED = pygame.Color(255, 0, 0)
 
 SCORE = 0
 
-GRAPHICS = True
+GRAPHICS = False
 
 # Window size
 FRAME_DIM = (720, 480)
@@ -161,7 +161,7 @@ def train(genomes, config):
         ge.append(g)
         x = random.randrange(0, FRAME_DIM[0], 10)
         y = random.randrange(0, FRAME_DIM[1], 10)
-        length = 3
+        length = 50
         snakes.append(Snake(x, y, length, FRAME_DIM))
 
     # Main logic
