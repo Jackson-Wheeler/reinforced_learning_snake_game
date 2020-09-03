@@ -1,50 +1,32 @@
-# Snake Eater
-A snake game written in Python using the PyGame library.
+# Reinforced Learning Snake Game
+Our program utilized the NEAT-python library and its reinforced learning to train the program how to play the snake game. It is not complete, as the snake has not learned how not to hit itself, but the snake has still learned a lot and can get pretty far! Important Note: The snake game itself was NOT created by us, we borrowed the snake game code from rajatdiptabiswas/snake-pygame on Github. This was done so that we could focus our project on the reinforced learning aspect of this program.
 
+## Requirements
+The packages that need to be install are as followed:
+1. neat-python
+2. pygame
 
-## Installing
-Download the Python 3 installer package from the official website and install it, if not installed previously.
-
-Run the following in the terminal to install the Pygame library
+Run each of the following in the terminal to install the packages
 ```
+pip3 install neat-python
 pip3 install pygame
 ```
 
-
-## Running the application
-Download the source code from the repository and run the file just as any other Python script (.py) file.
+# Running
+To run the program type the following from the terminal
 ```
-python3 Snake\ Game.py
+python3 main.py
 ```
+Then, you will be asked to input what type of mode you would like to run.
 
-The `difficulty` variable can be changed with the values provided in the comment to set the difficulty level.
-
-The rest of the code is properly commented and self explanatory. Tweaks can be made to change the play style or visuals of the game.
-
-
-## Screenshots
-
-![1](https://user-images.githubusercontent.com/32998741/33873439-27f635b2-df45-11e7-8fc1-f7812f17447a.png)
-*Written using PyCharm*
-
-![2](https://user-images.githubusercontent.com/32998741/33873437-2780ed2a-df45-11e7-9776-b1f151fa4e02.png)
-*Active game screen*
-
-![3](https://user-images.githubusercontent.com/32998741/33873440-28647360-df45-11e7-8291-b82d5646352f.png)
-*Game over screen*
+Human- play the classic snake game as a human! Using the arrow keys to play.
+Training- Run the training of the snake population. This will run many snakes at the same time. The final generation will be saved to the local file 'best_genome.p'.
+AI- This will be run using the generation saved into the local file 'best_genome.p'. It will take the best snake from that snake population and run it on the screen. If the snake happens to die, then it will reboot and run that same snake again, but with a different random starting position and random food positions.
 
 
-## Prerequisites
-* [Python](https://www.python.org)
-* [Pygame](https://www.pygame.org/wiki/GettingStarted), an open source Python library for making multimedia applications
+## Developed By
+Our reinforced learning work and implementation of the neat-python library.
+* **Jackson Wheeler and Sidharth Srinath**
 
-
-## Authors
-
-* **Rajat Dipta Biswas** - *Initial work*
-
-See also the list of [contributors](https://github.com/rajatdiptabiswas/snake-pygame/graphs/contributors) who participated in this project.
-
-## Acknowledgements
-* [Pygame Documentations](https://www.pygame.org/docs/)
-* [Udemy: Python Game Development](https://www.udemy.com/python-game-development-creating-a-snake-game-from-scratch/learn/v4/overview)
+## Credit
+As stated above credit for the basic snake game code (playing the game normally), as seen in human.py, goes 100% to rajatdiptabiswas/snake-pygame on Github. This code was borrowed so that we could focus on implementing reinforced learning. In training.py and ai.py his code was refractured and altered to fit our need, but much of his code governing the basic functionality of the game remained the same. 
