@@ -25,7 +25,7 @@ SCORE = 0
 # Window size
 FRAME_DIM = (720, 480)
 # Initialise game window
-pygame.display.set_caption('Snake Eater')
+pygame.display.set_caption('Our AI Snake')
 GAME_WINDOW = pygame.display.set_mode((FRAME_DIM[0], FRAME_DIM[1]))
 
 

@@ -22,13 +22,13 @@ RED = pygame.Color(255, 0, 0)
 
 SCORE = 0
 
-GRAPHICS = False
+GRAPHICS = True
 
 # Window size
 FRAME_DIM = (720, 480)
 # Initialise game window
 if GRAPHICS:
-    pygame.display.set_caption('Snake Eater')
+    pygame.display.set_caption('Snake Training')
     GAME_WINDOW = pygame.display.set_mode((FRAME_DIM[0], FRAME_DIM[1]))
 
 
@@ -161,7 +161,7 @@ def train(genomes, config):
         ge.append(g)
         x = random.randrange(0, FRAME_DIM[0], 10)
         y = random.randrange(0, FRAME_DIM[1], 10)
-        length = 50
+        length = 5
         snakes.append(Snake(x, y, length, FRAME_DIM))
 
     # Main logic
