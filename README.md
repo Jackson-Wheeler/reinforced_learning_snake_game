@@ -26,7 +26,7 @@ AI- This will be run using the generation saved into the local file 'best_genome
 
 ## Developed By
 Our reinforced learning work and implementation of the neat-python library.
-* **Jackson Wheeler and Sid Srinath**
+* **Jackson Wheeler and Sidharth Srinath**
 
 ## Credit
 As stated above credit for the basic snake game code (playing the game normally), as seen in human.py, goes 100% to rajatdiptabiswas/snake-pygame on Github. This code was borrowed so that we could focus on implementing reinforced learning. In training.py and ai.py his code was refractured and altered to fit our need, but much of his code governing the basic functionality of the game remained the same. 
