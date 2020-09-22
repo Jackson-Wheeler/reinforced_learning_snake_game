@@ -1,3 +1,5 @@
+Watch PROJECT_VIDEO for a 3 minute overview of the project!
+
 # Reinforced Learning Snake Game
 Our program utilized the NEAT-python library and its reinforced learning to train the program how to play the snake game. It is not complete, as the snake has not learned how not to hit itself, but the snake has still learned a lot and can get pretty far! Important Note: The snake game itself was NOT created by us, we borrowed the snake game code from rajatdiptabiswas/snake-pygame on Github. This was done so that we could focus our project on the reinforced learning aspect of this program.
 
